@@ -1,17 +1,4 @@
-import gradio as gr
-from mysite.libs.utilities import chat_with_interpreter, completion, process_file,no_process_file
-from interpreter import interpreter
-import mysite.interpreter.interpreter_config  # インポートするだけで設定が適用されます
-import duckdb
-import gradio as gr
-import psycopg2
-from dataclasses import dataclass, field
-from typing import List, Optional
-from mysite.interpreter.process import no_process_file,process_file
-#from controllers.gra_04_database.rides import test_set_lide
-import requests
 
-val = """
 # 社員がプロフィールを登録・公開し、お互いに参照できるシステム
 
 ## 機能
@@ -94,27 +81,3 @@ googleappsscript
 gradio は gradio_interface というBlock名で作成
 fastapiはrouter の作成
 
-"""
-
-def send_to_google_chat(message: str):
-    webhook_url = 'https://chat.googleapis.com/v1/spaces/AAAANwDF_KE/messages?key=AIzaSyDdI0hCZtE6vySjMm-WEfRq3CPzqKqqsHI&token=qSigSPSbTINJITgO30iGKnyeY48emcUJd9LST7FBLLY'
-    headers = {'Content-Type': 'application/json; charset=UTF-8'}
-    data = {'text': message}
-    response = requests.post(webhook_url, headers=headers, json=data)
-    response.raise_for_status()
-
-def process_file_and_notify(*args, **kwargs):
-    result = process_file(*args, **kwargs)
-    send_to_google_chat(result)
-    return result
-
-gradio_interface = gr.Interface(
-    fn=process_file_and_notify,
-    inputs=[
-        "file",
-        gr.Textbox(label="Additional Notes", lines=10,value=val),
-        gr.Textbox(label="Folder Name",value="test_folders"),
-        gr.Textbox(label="github token",value="***********************"),
-    ],
-    outputs="text",
-)

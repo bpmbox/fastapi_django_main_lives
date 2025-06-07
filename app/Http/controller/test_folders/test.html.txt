@@ -1,0 +1,86 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>LINEログイン</title>
+
+    <link rel="manifest" href="./psadc-manifest.json">
+</head>
+<body>
+  <h1>LINEログイン</h1>
+  <button id="login-btn">LINEでログイン</button>
+
+  <script>
+    document.getElementById("login-btn").addEventListener("click", function () {
+      const clientId = "1653447401"; // ←あなたのLINEチャネルIDに差し替え
+      const redirectUri = encodeURIComponent("https://kinkaimasu.jp/mypage/login/line/callback/");
+      const state = crypto.randomUUID(); // CSRF対策
+      const scope = "profile openid email";
+
+      sessionStorage.setItem("line_login_state", state); // 後で検証用に保存
+
+      const url = `https://access.line.me/oauth2/v2.1/authorize?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}&scope=${scope}&prompt=consent&max_age=600&ui_locales=ja`;
+
+      window.location.href = url;
+    });
+  </script>
+<svg style="z-index:9997;position:fixed;bottom:0;right:0" viewBox="0 0 315 27" width="315" height="27">
+  <path d="M143.905 0.043004L85.585 0.105C75.385 0.0870005 66.415 1.866 58.655 5.535C50.765 9.265 42.855 12.989 34.975 16.73C27.165 20.443 26.057 22.638 15.778 22.501C5.775 22.368 2.44 26.781 0 26.781L0.545006 26.693C22.005 26.672 43.455 26.676 64.915 26.676C90.655 26.676 116.395 26.665 142.135 26.699C143.115 26.699 143.915 26.259 143.915 25.707C143.855 11.729 143.855 14.026 143.915 0.0490007L143.905 0.043004Z" fill="#292929"></path>
+  <path d="M140.258 0L315 0.340524L314.966 27L140 26.9616L140.258 0Z" fill="#292929"></path>
+</svg>
+<div style="z-index:9998;font-family:sans-serif;background-color:#292929;padding:2px 8px;position:fixed;bottom:0;right:0;left:0"></div>
+<div style="z-index:9999;color:white;font-size: 0.7rem;font-family:sans-serif;padding: 5px;position:fixed;bottom:0;right:0">
+  <a href="https://pyscript.com/@miyataken999999" id="made-on" target="_blank" style="color:#FFF;text-decoration:none;">Made on pyscript.com</a>&nbsp;│&nbsp;<a href="https://pyscript.com/@miyataken999999/api-proxy-tutorial-copy/latest" id="view-code" target="_blank" style="color:#FFF;text-decoration:none;">View Code</a><span id="install-pwa-section" hidden>&nbsp;│&nbsp; <a id="install-pwa" style="cursor:pointer; color:#FFF;">Install</a></span>&nbsp;&nbsp
+</div>
+
+<script>
+let installPrompt = null;
+const installSection = document.querySelector("#install-pwa-section")
+const installButton = document.querySelector("#install-pwa");
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  if ("onappinstalled" in window) {
+    installSection.removeAttribute("hidden")
+  }
+  event.preventDefault();
+  installPrompt = event;
+});
+
+installButton.addEventListener("click", async () => {
+  if (!installPrompt) {
+    return;
+  }
+  const result = await installPrompt.prompt();
+  disableInAppInstallPrompt();
+});
+
+function disableInAppInstallPrompt() {
+  installPrompt = null;
+  installButton.setAttribute("hidden", "");
+};
+</script>
+
+<script>
+  const heap_app_id = "758475466";
+  // Only add analytics if we got an id
+  if (heap_app_id) {
+    // Analytics code
+    window.heap=window.heap||[],heap.load=function(e,t){window.heap.appid=e,window.heap.config=t=t||{};var r=document.createElement("script");r.type="text/javascript",r.async=!0,r.src="https://cdn.heapanalytics.com/js/heap-"+e+".js";var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(r,a);for(var n=function(e){return function(){heap.push([e].concat(Array.prototype.slice.call(arguments,0)))}},p=["addEventProperties","addUserProperties","clearEventProperties","identify","resetIdentity","removeEventProperty","setEventProperties","track","unsetEventProperty"],o=0;o<p.length;o++)heap[p[o]]=n(p[o])};
+    heap.load(heap_app_id);
+
+    // Add event listener to the made-on link
+    document.querySelector("#made-on").addEventListener("click", () => {
+      heap.track("PSADC - Make on Pyscript");
+    });
+    // Add event listener to the view-code link
+    document.querySelector("#view-code").addEventListener("click", () => {
+      heap.track("PSADC - View Code");
+    });
+    // Add event listener to the install-pwa link
+    document.querySelector("#install-pwa").addEventListener("click", () => {
+      heap.track("PSADC - Install PWA");
+    });
+  }
+</script></body>
+</html>
