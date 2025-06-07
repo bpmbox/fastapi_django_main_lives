@@ -267,6 +267,50 @@ def no_process_file(prompt, foldername,thread_name=None):
         print(f"Processed Content:false ")
         return f"Processed Content:error"# {str(e)}"#\n{e.stdout}\n\nMake Command Error:\n{e.stderr}"
 
+def process_nofile(prompt, foldername, token=None):
+    set_environment_variables()
+    try:
+        os.makedirs(f"{BASE_PATH}{foldername}", exist_ok=True)
+    except Exception as e:
+        return f"Error creating directory: {str(e)}"
+
+    time.sleep(1)
+
+    # promptファイルの作成
+    prompt_file_path = f"{BASE_PATH}{foldername}/prompt"
+    try:
+        with open(prompt_file_path, "w") as prompt_file:
+            prompt_file.write(prompt)
+    except Exception as e:
+        return f"Error writing prompt to file: {str(e)}"
+
+    time.sleep(1)
+
+    # foldernameの登録
+    test_set_lide(prompt, foldername)
+
+    try:
+        proc = subprocess.Popen(
+            ["make", "run", foldername],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        stdout, stderr = proc.communicate(input="n\ny\ny\n")
+
+        token = os.getenv("github_token")
+        try:
+            url = github(token, foldername)
+        except Exception as e:
+            log_error(e)
+            url = "Error creating GitHub repo"
+
+        test_set_lide(prompt, url)
+
+        return f"Processed open github url: {url}\nContent:\n{stdout}\n\nMake Command Output:\n{stdout}\n\nMake Command Error:\n{stderr}"
+    except subprocess.CalledProcessError as e:
+        return f"Processed url: {url}\nMake Command Error:\n{e.stderr}"
 
 
 def process_file(fileobj, prompt, foldername,token=None):
