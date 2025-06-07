@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  gradio-fastapi-django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gradio-fastapi-django-main
+    ports:
+      - "7860:7860"
+    env_file:
+      - .env
+    volumes:
+      - ./cache:/app/cache
+      - ./static:/app/static
+      - ./templates:/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+networks:
+  default:
+    driver: bridge
