@@ -44,7 +44,7 @@ def display_html():
     return html_content
 
 # Gradioのインターフェースを作成
-gradio_interface = gr.Interface(
+gradio_interfaces = gr.Interface(
     fn=display_html,  # HTMLコンテンツを返す関数
     inputs=[],  # 入力なし
     outputs=gr.Markdown()  # HTMLコンテンツを表示
