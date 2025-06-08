@@ -53,6 +53,6 @@ gradio_interfaces = gr.Interface(
 
 # Gradioのインターフェースを作成
 with gr.Blocks() as gradio_interface:
-    gr.Markdown(display_html())
+    gr.Html(display_html())
 # インターフェースを起動
 #iface.launch()
