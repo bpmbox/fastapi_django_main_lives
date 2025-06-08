@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, HTTPException, Response
 import httpx
 
 LARAVEL_URL = "http://localhost:8000"
-router = APIRouter(prefix="/gradios", tags=["gradios"])
+router = APIRouter(prefix="/laravel", tags=["laravel"])
 
 # GET
 @router.get("/route/{path:path}")
