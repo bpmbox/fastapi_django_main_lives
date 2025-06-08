@@ -1,0 +1,275 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 全履歴を取得
+        lfs: true  # Git LFS サポート
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install huggingface_hub
+        
+    - name: Configure Git for Hugging Face
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+    
+    - name: Setup Hugging Face Token
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        # Hugging Face Hubにログイン
+        python -c "
+        from huggingface_hub import login
+        import os
+        token = os.environ.get('HF_TOKEN')
+        if token:
+            login(token=token)
+            print('✅ Hugging Face login successful')
+        else:
+            print('❌ HF_TOKEN not found in secrets')
+            exit(1)
+        "
+    
+    - name: Clone Hugging Face Space
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        # Hugging Face Spaceをクローン
+        git clone https://huggingface.co/spaces/kenken999/fastapi_django_main_live hf_space
+        cd hf_space
+        
+        # 認証情報を設定
+        git remote set-url origin https://oauth2:$HF_TOKEN@huggingface.co/spaces/kenken999/fastapi_django_main_live
+    
+    - name: Copy files and update Space
+      run: |
+        # 変更されたファイルをコピー
+        echo "📂 Copying updated files..."
+        
+        # デバッグツールバーファイルをコピー
+        if [ -f "codespaces_debug.py" ]; then
+          cp codespaces_debug.py hf_space/
+          echo "✅ Copied codespaces_debug.py"
+        fi
+        
+        # app.py がある場合はコピー
+        if [ -f "app.py" ]; then
+          cp app.py hf_space/
+          echo "✅ Copied app.py"
+        fi
+        
+        # requirements.txt をコピー
+        if [ -f "requirements.txt" ]; then
+          cp requirements.txt hf_space/
+          echo "✅ Copied requirements.txt"
+        fi
+        
+        # Dockerfile がある場合はコピー
+        if [ -f "Dockerfile" ]; then
+          cp Dockerfile hf_space/
+          echo "✅ Copied Dockerfile"
+        fi
+        
+        # README.md を更新
+        echo "📝 Updating README.md with deployment info..."
+        cat > hf_space/README.md << 'EOF'
+        ---
+        title: FastAPI Django Main Live
+        emoji: 🚀
+        colorFrom: blue
+        colorTo: purple
+        sdk: docker
+        pinned: false
+        license: mit
+        app_port: 8004
+        ---
+
+        # FastAPI Debug Toolbar - Hugging Face Spaces
+
+        🚀 **Laravel風デバッグツールバー for FastAPI**
+
+        ## 🌟 特徴
+
+        - ✅ **GitHub Actions自動デプロイ**
+        - 🔧 **Content-Length問題修正済み**
+        - 📊 **SQLAlchemy クエリ監視**
+        - ⚡ **リアルタイムパフォーマンス測定**
+        - 🎨 **Laravel風美しいUI**
+        - 🌐 **Hugging Face Spaces完全対応**
+
+        ## 🚀 アクセス
+
+        デバッグツールバー付きのページにアクセスして、画面下部のバーをクリックしてください：
+
+        - `/demo` - 完全デモページ
+        - `/simple` - シンプルテスト
+        - `/users` - データベースクエリテスト
+
+        ## 🔄 自動デプロイ
+
+        このスペースはGitHub Actionsで自動更新されます：
+        - `main`ブランチへのプッシュで自動デプロイ
+        - 手動実行も可能
+        - デバッグツールバーの最新版を常に反映
+
+        ## 📡 最終更新
+
+        Last deployed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        EOF
+    
+    - name: Create or update app.py for Hugging Face Spaces
+      run: |
+        # Hugging Face Spaces用のメインファイルを作成
+        cat > hf_space/app.py << 'EOF'
+        #!/usr/bin/env python3
+        """
+        Hugging Face Spaces FastAPI Debug Toolbar
+        GitHub Actions自動デプロイ版
+        """
+        import os
+        import sys
+
+        # codespaces_debug.py から app をインポート
+        try:
+            from codespaces_debug import app
+            print("✅ FastAPI Debug Toolbar loaded successfully")
+        except ImportError as e:
+            print(f"❌ Failed to import codespaces_debug: {e}")
+            # フォールバック用の簡単なFastAPIアプリ
+            from fastapi import FastAPI
+            from fastapi.responses import HTMLResponse
+            
+            app = FastAPI(title="FastAPI Debug Toolbar - Error")
+            
+            @app.get("/")
+            async def error_page():
+                return HTMLResponse("""
+                <!DOCTYPE html>
+                <html>
+                <head><title>Debug Toolbar Error</title></head>
+                <body>
+                    <h1>❌ Error Loading Debug Toolbar</h1>
+                    <p>Failed to load codespaces_debug.py</p>
+                    <p>Check the logs for more details.</p>
+                </body>
+                </html>
+                """)
+
+        if __name__ == "__main__":
+            import uvicorn
+            port = int(os.environ.get("PORT", 8004))
+            uvicorn.run(app, host="0.0.0.0", port=port)
+        EOF
+        
+        echo "✅ Created app.py for Hugging Face Spaces"
+    
+    - name: Update requirements.txt for Hugging Face Spaces
+      run: |
+        # Hugging Face Spaces用のrequirements.txtを作成
+        cat > hf_space/requirements.txt << 'EOF'
+        fastapi==0.109.2
+        uvicorn[standard]==0.24.0
+        starlette==0.36.3
+        sqlalchemy==1.4.48
+        python-multipart==0.0.6
+        jinja2==3.1.2
+        python-jose[cryptography]==3.3.0
+        passlib[bcrypt]==1.7.4
+        EOF
+        
+        echo "✅ Updated requirements.txt for Hugging Face Spaces"
+    
+    - name: Create Dockerfile for Hugging Face Spaces
+      run: |
+        # Hugging Face Spaces用のDockerfileを作成
+        cat > hf_space/Dockerfile << 'EOF'
+        FROM python:3.11-slim
+
+        WORKDIR /code
+
+        # システムの依存関係をインストール
+        RUN apt-get update && apt-get install -y \
+            gcc \
+            && rm -rf /var/lib/apt/lists/*
+
+        # Pythonの依存関係をコピーしてインストール
+        COPY ./requirements.txt /code/requirements.txt
+        RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+        # アプリケーションコードをコピー
+        COPY . /code/
+
+        # ポート8004を公開
+        EXPOSE 8004
+
+        # アプリケーションを起動
+        CMD ["python", "app.py"]
+        EOF
+        
+        echo "✅ Created Dockerfile for Hugging Face Spaces"
+    
+    - name: Deploy to Hugging Face Spaces
+      run: |
+        cd hf_space
+        
+        # 変更があるかチェック
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "📤 Changes detected, deploying to Hugging Face Spaces..."
+          
+          # 変更をコミット
+          git add .
+          git commit -m "🚀 Auto-deploy from GitHub Actions $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+          ✅ Features updated:
+          - FastAPI Debug Toolbar (Latest)
+          - Content-Length問題修正済み
+          - Laravel風UI with streaming response
+          - SQLAlchemy query monitoring
+          - Real-time performance tracking
+          
+          🤖 Deployed via GitHub Actions"
+          
+          # Hugging Face Spacesにプッシュ
+          git push origin main
+          
+          echo "✅ Successfully deployed to Hugging Face Spaces!"
+          echo "🌐 Check your space at: https://huggingface.co/spaces/kenken999/fastapi_django_main_live"
+        else
+          echo "ℹ️  No changes detected, skipping deployment"
+        fi
+    
+    - name: Deployment Summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target**: Hugging Face Spaces" >> $GITHUB_STEP_SUMMARY
+        echo "- **Space URL**: https://huggingface.co/spaces/kenken999/fastapi_django_main_live" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "- **Features**: FastAPI Debug Toolbar with Content-Length fix" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 Debug Toolbar Features" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Laravel-style UI with gradients" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ SQLAlchemy query monitoring" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Real-time performance tracking" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Streaming response (Content-Length fixed)" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Interactive toolbar (click to expand)" >> $GITHUB_STEP_SUMMARY
