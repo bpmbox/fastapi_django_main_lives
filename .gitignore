@@ -140,3 +140,4 @@ cython_debug/
 #staticfiles/
 core.*
 
+*.db
