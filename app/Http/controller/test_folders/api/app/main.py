@@ -3,6 +3,6 @@ from routers import user, team, knowledge
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to the API"}
+app.include_router(user.router")
+app.include_router(team.router")
+app.include_router(knowledge.router")

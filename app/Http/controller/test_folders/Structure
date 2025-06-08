@@ -16,8 +16,5 @@ __init__.py
 user.py
 team.py
 knowledge.py
-utils
-__init__.py
-db.py
-.gitignore
 requirements.txt
+.gitignore

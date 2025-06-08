@@ -1,5 +1,3 @@
-/vendor/
-/node_modules/
-.env
-/storage/app/photos/
-/public/storage/photos/
+*.pyc
+__pycache__/
+database.db

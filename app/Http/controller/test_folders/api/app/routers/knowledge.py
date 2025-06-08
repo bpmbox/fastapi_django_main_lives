@@ -1,18 +1,15 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
-from . import models
-from .schemas import KnowledgeCreate, Knowledge
+from ..models import Knowledge
 
 router = APIRouter()
 
 @router.post("/knowledge/")
-async def create_knowledge(knowledge: KnowledgeCreate):
-    db_knowledge = models.Knowledge(term=knowledge.term, description=knowledge.description)
-    db.add(db_knowledge)
-    await db.commit()
+async def create_knowledge(knowledge: Knowledge, session: Session = Depends()):
+    existing_knowledge = session.query(Knowledge).filter_by(term=knowledge.term).first()
+    if existing_knowledge:
+        raise HTTPException(status_code=400, detail="Knowledge term already exists")
+    new_knowledge = Knowledge(term=knowledge.term, description=knowledge.description)
+    session.add(new_knowledge)
+    session.commit()
     return {"message": "Knowledge created successfully"}
-
-@router.get("/knowledge/")
-async def read_knowledge():
-    knowledge = db.query(models.Knowledge).all()
-    return [Knowledge.from_orm(knowledge) for knowledge in knowledge]
