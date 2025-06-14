@@ -1,0 +1,87 @@
+# Docker Compose for Persistent AI GUI Environment
+# Based on dorowu/ubuntu-desktop-lxde-vnc for stable desktop environment
+
+version: '3.8'
+
+services:
+  ai-gui-desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc:latest
+    container_name: copilot-ai-desktop
+    restart: unless-stopped
+    
+    # Environment configuration
+    environment:
+      - VNC_PASSWORD=copilot
+      - RESOLUTION=1920x1080
+      - USER=aiuser
+      - PASSWORD=copilot
+      - ROOT_PASSWORD=copilot
+      - DEPTH=24
+    
+    # Port mappings
+    ports:
+      - "6080:80"        # noVNC web interface
+      - "5901:5900"      # VNC direct access
+    
+    # Volume mounts for persistence
+    volumes:
+      # AI Memory persistence
+      - copilot-ai-memory:/ai-memory
+      # GUI data persistence (desktop settings, applications)
+      - copilot-gui-data:/home/aiuser
+      # Browser data persistence
+      - copilot-browser-data:/home/aiuser/.mozilla
+      # Screenshots and automation data
+      - copilot-screenshots:/home/aiuser/Screenshots
+      # Temporary data
+      - copilot-temp:/tmp/ai-workspace
+      # Shared workspace (optional)
+      - /workspaces/fastapi_django_main_live:/workspace:ro
+    
+    # Resource limits to prevent container from consuming too much
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    # Security options
+    security_opt:
+      - seccomp:unconfined
+    
+    # Shared memory for GUI applications
+    shm_size: 512mb
+    
+    # Keep container running
+    tty: true
+    stdin_open: true
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Named volumes for persistence
+volumes:
+  copilot-ai-memory:
+    external: true
+  copilot-gui-data:
+    external: true
+  copilot-browser-data:
+    external: true
+  copilot-screenshots:
+    driver: local
+  copilot-temp:
+    driver: local
+
+# Network configuration
+networks:
+  default:
+    name: copilot-ai-network
+    driver: bridge

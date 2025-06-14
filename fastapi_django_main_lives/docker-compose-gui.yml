@@ -1,0 +1,39 @@
+services:
+  app-gui:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile-gui
+    volumes:
+      - .:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker-host.sock
+    environment:
+      - DISPLAY=:1
+      - VNC_PW=copilot123
+      - VNC_RESOLUTION=1920x1080
+      - DEBIAN_FRONTEND=noninteractive
+    ports:
+      - "7860:7860"    # Gradio
+      - "6080:6080"    # noVNC
+      - "5900:5900"    # VNC
+    cap_add:
+      - SYS_ADMIN
+    security_opt:
+      - seccomp:unconfined
+    privileged: true
+    command: /bin/bash -c "while sleep 1000; do :; done"
+
+  # GUI Desktop Environment
+  gui-desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc:focal
+    environment:
+      - VNC_PW=copilot123
+      - RESOLUTION=1920x1080
+    ports:
+      - "6081:80"     # noVNC alternative
+      - "5901:5900"   # VNC alternative
+    volumes:
+      - gui-data:/home/ubuntu
+      - ../:/workspace
+
+volumes:
+  gui-data:

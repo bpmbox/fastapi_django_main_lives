@@ -1,0 +1,12 @@
+{
+  "timeZone": "Asia/Tokyo",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "OAuth2",
+        "serviceId": "oauth2",
+        "version": "v2"
+      }
+    ]
+  }
+}

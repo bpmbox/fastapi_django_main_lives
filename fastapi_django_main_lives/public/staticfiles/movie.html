@@ -1,0 +1,46 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miibo Avatar Sample</title>
+    <script src="https://cdn.jsdelivr.net/gh/miibo-ai/prototypes@0.0.1/miibo-avatar/miibo-avatar.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.1.0/recorder.min.js" integrity="sha512-Dc8aBUPSsnAiEtyqTYZrldxDfs2FnS8cU7BVHIJ1m5atjKrtQCoPRIn3gsVbKm2qY8NwjpTVTnawoC4XBvEZiQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+<!--
+#my-video {
+    width: 512px;
+    height: 512px;
+}
+-->
+    </style>
+</head>
+<body>
+    <video id="my-video" autoplay></video>
+
+    <script>
+        const miiboAvatar = new MiiboAvatar({
+            container: "my-video",
+            option: {
+                miibo: {
+                    api_key: "<miibo API-KEY>",
+                    agent_id: "<miibo Agent-ID>",
+                    user_id: "user",
+                },
+                d_id: {
+                    key: "bWl5YXRha2VuOTk4QGdtYWlsLmNvbQ:49lxgWJsJTXPorzCh7O48",
+                    service: "talks",
+                    priority: "cost",
+                    presenter:{
+                        gender: "male",
+                        image_url: "https://kenken999-fastapi-django-main-live.hf.space/static/sugi.jpg",
+                        idle_movie: "https://github.com/miibo-takumori/resorces/raw/main/portorate-idle.mp4",
+                        loading_movie: "https://github.com/miibo-takumori/resorces/raw/main/portorate-loading.mp4",
+                    }
+                }
+            }
+        })
+        
+        miiboAvatar.autoRecognize();
+    </script>
+</body>
+</html>

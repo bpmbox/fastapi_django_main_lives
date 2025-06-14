@@ -1,0 +1,32 @@
+{
+  "name": "Simple Chatbot",
+  "version": "1.0.0",
+  "description": "A simple chatbot that can respond to basic user queries",
+  "responses": {
+    "greeting": [
+      "Hello! How can I help you today?",
+      "Hi there! What can I do for you?",
+      "Greetings! How may I assist you?"
+    ],
+    "goodbye": [
+      "Goodbye! Have a great day!",
+      "See you later!",
+      "Thanks for chatting with me!"
+    ],
+    "default": [
+      "I'm not sure I understand. Could you please rephrase that?",
+      "That's interesting! Can you tell me more?",
+      "I'm still learning. Could you try asking something else?"
+    ]
+  },
+  "keywords": {
+    "greeting": ["hello", "hi", "hey", "greetings"],
+    "goodbye": ["bye", "goodbye", "see you", "farewell"],
+    "help": ["help", "assist", "support"]
+  },
+  "settings": {
+    "case_sensitive": false,
+    "max_response_length": 200,
+    "enable_logging": true
+  }
+}

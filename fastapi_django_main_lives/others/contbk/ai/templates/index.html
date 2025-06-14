@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Websites</h1>
+    <ul>
+        {% for website in websites %}
+            <li>{{ website.name }} ({{ website.url }})</li>
+        {% endfor %}
+    </ul>
+{% endblock %}

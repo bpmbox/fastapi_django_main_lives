@@ -1,0 +1,41 @@
+import gradio as gr
+
+class GradioInterface:
+    ifrac:any
+    def __init__(self):
+        self iface = Interface(
+            fn=self.predict,
+            inputs="image",
+            outputs="text",
+            title="Image Search",
+            description="Search for images using Google Apps Script"
+        )
+
+    def predict(self, img):
+        # Implement image search logic using Google Apps Script
+        pass
+
+    def launch(self):
+        self.iface.launch()
+
+gradio_intarface = GradioInterface().ifracimport gradio as gr
+
+class GradioInterface:
+    ifrac:any
+    def __init__(self):
+        self iface = Interface(
+            fn=self.predict,
+            inputs="image",
+            outputs="text",
+            title="Image Search",
+            description="Search for images using Google Apps Script"
+        )
+
+    def predict(self, img):
+        # Implement image search logic using Google Apps Script
+        pass
+
+    def launch(self):
+        self.iface.launch()
+
+gradio_intarface = GradioInterface().ifrac

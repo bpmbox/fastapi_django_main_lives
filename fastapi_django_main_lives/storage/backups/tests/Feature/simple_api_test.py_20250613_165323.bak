@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+"""
+シンプルなAPI接続テスト
+"""
+from gradio_client import Client
+import sys
+
+def simple_test():
+    try:
+        print("🔗 Gradioサーバーに接続中...")
+        client = Client("http://localhost:7860")
+        print("✅ 接続成功!")
+        
+        print("\n🧪 プロンプト作成テスト...")
+        result = client.predict(
+            "テストプロンプト",
+            "Hello World を表示するシンプルなPythonスクリプトを作成してください。",
+            "テスト",
+            api_name="/create_test_prompt"
+        )
+        
+        print(f"結果: {result}")
+        return True
+        
+    except Exception as e:
+        print(f"❌ エラー: {e}")
+        return False
+
+if __name__ == "__main__":
+    simple_test()

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Gradio App</h1>
+    <div id="gradio-app"></div>
+    <script>
+        gradio_app = new GradioApp("{{ interface_id }}");
+    </script>
+{% endblock %}

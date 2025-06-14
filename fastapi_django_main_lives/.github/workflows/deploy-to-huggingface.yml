@@ -1,0 +1,38 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Deploy to Hugging Face Space
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        
+        # Clone HF repository to a separate directory
+        git clone https://oauth2:${HF_TOKEN}@huggingface.co/spaces/kenken999/fastapi_django_main_live hf_repo
+        
+        # Copy all files except .git
+        rsync -av --exclude='.git' --exclude='hf_repo' ./ hf_repo/
+        
+        cd hf_repo
+        
+        # Check if there are changes to commit
+        if [ -n "$(git status --porcelain)" ]; then
+          git add .
+          git commit -m "🚀 Auto-deploy from GitHub Actions"
+          git push --force origin main
+          echo "✅ Deployed to Hugging Face Spaces"
+        else
+          echo "ℹ️ No changes to deploy"
+        fi

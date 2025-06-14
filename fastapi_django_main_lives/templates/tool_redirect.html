@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Tool Redirect - {{ tool_name }}{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; min-height: 400px;">
+    <h1 class="loading" style="font-size: 3rem; margin-bottom: 1rem; animation: pulse 1s infinite;">
+        🚀 Loading {{ tool_display_name }}...
+    </h1>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+        Redirecting to Gradio interface...
+    </p>
+    <a href="/gradio" class="btn btn-primary" style="padding: 1rem 2rem; background: rgba(255,255,255,0.2); border-radius: 8px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.3);">
+        Click here if not redirected automatically
+    </a>
+</div>
+
+<script>
+    // Auto redirect after 1 second
+    setTimeout(() => {
+        window.location.href = '/gradio';
+    }, 1000);
+</script>
+
+<style>
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
+    .loading {
+        animation: pulse 1s infinite;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  desktop-ubuntu:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    container_name: ubuntu-desktop-vnc-dev
+    privileged: true
+    ports:
+      - "6082:80"  # 別ポートに変更
+    environment:
+      - HTTP_PASSWORD=mypassword
+    volumes:
+      - /workspaces/fastapi_django_main_lives:/code  # dev containerのフォルダをマウント
+      - /dev/shm:/dev/shm
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped

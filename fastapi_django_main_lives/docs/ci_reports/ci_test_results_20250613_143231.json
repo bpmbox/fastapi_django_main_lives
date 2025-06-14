@@ -1,0 +1,74 @@
+{
+  "screenshots": {
+    "main_dashboard": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/main_dashboard_20250613_143231.png",
+      "description": "メインダッシュボード",
+      "timestamp": "2025-06-13T14:32:32.222783"
+    },
+    "gradio_interface": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_interface_20250613_143231.png",
+      "description": "Gradioインターフェース",
+      "timestamp": "2025-06-13T14:32:33.223104"
+    },
+    "local_backup": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/local_backup_20250613_143231.png",
+      "description": "ローカルバックアップ",
+      "timestamp": "2025-06-13T14:32:34.223395"
+    },
+    "gradio_startup_guide": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_startup_guide_20250613_143231.png",
+      "description": "Gradio startup_guide インターフェース",
+      "timestamp": "2025-06-13T14:32:34.223492"
+    },
+    "gradio_chat_conversation": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_chat_conversation_20250613_143231.png",
+      "description": "Gradio chat_conversation インターフェース",
+      "timestamp": "2025-06-13T14:32:34.223529"
+    },
+    "gradio_ai_automation": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_ai_automation_20250613_143231.png",
+      "description": "Gradio ai_automation インターフェース",
+      "timestamp": "2025-06-13T14:32:34.223564"
+    },
+    "gradio_prompt_document": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_prompt_document_20250613_143231.png",
+      "description": "Gradio prompt_document インターフェース",
+      "timestamp": "2025-06-13T14:32:34.223599"
+    },
+    "gradio_management_dashboard": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_management_dashboard_20250613_143231.png",
+      "description": "Gradio management_dashboard インターフェース",
+      "timestamp": "2025-06-13T14:32:34.223631"
+    }
+  },
+  "api_tests": {
+    "create_prompt": {
+      "success": true,
+      "description": "プロンプト作成テスト",
+      "timestamp": "2025-06-13T14:32:34.988133"
+    },
+    "save_prompt": {
+      "success": true,
+      "description": "プロンプト保存テスト",
+      "timestamp": "2025-06-13T14:32:35.488267"
+    },
+    "load_prompt": {
+      "success": true,
+      "description": "プロンプト読み込みテスト",
+      "timestamp": "2025-06-13T14:32:35.988412"
+    },
+    "generate_response": {
+      "success": true,
+      "description": "レスポンス生成テスト",
+      "timestamp": "2025-06-13T14:32:36.488565"
+    }
+  }
+}

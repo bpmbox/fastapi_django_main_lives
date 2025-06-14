@@ -1,0 +1,11 @@
+appsheet-qa/
+requirements.txt
+main.py
+lib/
+ocr.py
+line_dev.py
+gas.py
+tests/
+test_ocr.py
+test_line_dev.py
+test_gas.py

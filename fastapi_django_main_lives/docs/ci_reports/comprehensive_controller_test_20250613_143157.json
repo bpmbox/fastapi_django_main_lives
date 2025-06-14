@@ -1,0 +1,253 @@
+{
+  "controllers": [
+    {
+      "name": "beginner_guide_system",
+      "path": "controllers.beginner_guide_system",
+      "description": "初心者ガイドシステム",
+      "api_name": "beginner_guide_api",
+      "category": "ガイド・サポート"
+    },
+    {
+      "name": "conversation_logger",
+      "path": "controllers.conversation_logger",
+      "description": "会話ログシステム",
+      "api_name": "conversation_logger_api",
+      "category": "ログ・履歴"
+    },
+    {
+      "name": "github_issue_creator",
+      "path": "controllers.github_issue_creator",
+      "description": "GitHub Issue作成システム",
+      "api_name": "github_issue_creator_api",
+      "category": "GitHub連携"
+    },
+    {
+      "name": "dify_management",
+      "path": "controllers.dify_management",
+      "description": "Dify管理システム",
+      "api_name": "dify_management_api",
+      "category": "AI管理"
+    },
+    {
+      "name": "contbk_dashboard",
+      "path": "controllers.contbk_dashboard",
+      "description": "ContBK統合ダッシュボード",
+      "api_name": "contbk_dashboard_api",
+      "category": "ダッシュボード"
+    },
+    {
+      "name": "gra_01_chat",
+      "path": "controllers.gra_01_chat",
+      "description": "チャットシステム",
+      "api_name": "chat_api",
+      "category": "コミュニケーション"
+    },
+    {
+      "name": "gra_02_openInterpreter",
+      "path": "controllers.gra_02_openInterpreter",
+      "description": "オープンインタープリター",
+      "api_name": "open_interpreter_api",
+      "category": "AI・自動化"
+    },
+    {
+      "name": "gra_03_programfromdoc",
+      "path": "controllers.gra_03_programfromdoc",
+      "description": "文書からプログラム生成",
+      "api_name": "program_from_doc_api",
+      "category": "プログラム生成"
+    },
+    {
+      "name": "gra_04_database",
+      "path": "controllers.gra_04_database",
+      "description": "データベース管理",
+      "api_name": "database_api",
+      "category": "データ管理"
+    },
+    {
+      "name": "gra_05_files",
+      "path": "controllers.gra_05_files",
+      "description": "ファイル管理システム",
+      "api_name": "files_api",
+      "category": "ファイル管理"
+    }
+  ],
+  "api_tests": {
+    "beginner_guide_system": {
+      "name": "beginner_guide_system",
+      "description": "初心者ガイドシステム",
+      "category": "ガイド・サポート",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.020784"
+    },
+    "conversation_logger": {
+      "name": "conversation_logger",
+      "description": "会話ログシステム",
+      "category": "ログ・履歴",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.088811"
+    },
+    "github_issue_creator": {
+      "name": "github_issue_creator",
+      "description": "GitHub Issue作成システム",
+      "category": "GitHub連携",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.198025"
+    },
+    "dify_management": {
+      "name": "dify_management",
+      "description": "Dify管理システム",
+      "category": "AI管理",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.262159"
+    },
+    "contbk_dashboard": {
+      "name": "contbk_dashboard",
+      "description": "ContBK統合ダッシュボード",
+      "category": "ダッシュボード",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.339619"
+    },
+    "gra_01_chat": {
+      "name": "gra_01_chat",
+      "description": "チャットシステム",
+      "category": "コミュニケーション",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.397185"
+    },
+    "gra_02_openInterpreter": {
+      "name": "gra_02_openInterpreter",
+      "description": "オープンインタープリター",
+      "category": "AI・自動化",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.475557"
+    },
+    "gra_03_programfromdoc": {
+      "name": "gra_03_programfromdoc",
+      "description": "文書からプログラム生成",
+      "category": "プログラム生成",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.542737"
+    },
+    "gra_04_database": {
+      "name": "gra_04_database",
+      "description": "データベース管理",
+      "category": "データ管理",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.604900"
+    },
+    "gra_05_files": {
+      "name": "gra_05_files",
+      "description": "ファイル管理システム",
+      "category": "ファイル管理",
+      "success": false,
+      "api_available": false,
+      "response_time": 0,
+      "error": "Could not fetch config for https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+      "timestamp": "2025-06-13T14:31:57.800199"
+    }
+  },
+  "screenshots": {
+    "category_コミュニケーション": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_コミュニケーション_20250613_143157.png",
+      "description": "コミュニケーションカテゴリ画面",
+      "timestamp": "2025-06-13T14:31:58.864122"
+    },
+    "category_AI管理": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_AI管理_20250613_143157.png",
+      "description": "AI管理カテゴリ画面",
+      "timestamp": "2025-06-13T14:31:59.864464"
+    },
+    "category_ファイル管理": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_ファイル管理_20250613_143157.png",
+      "description": "ファイル管理カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:00.864773"
+    },
+    "category_GitHub連携": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_GitHub連携_20250613_143157.png",
+      "description": "GitHub連携カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:01.865094"
+    },
+    "category_AI・自動化": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_AI_自動化_20250613_143157.png",
+      "description": "AI・自動化カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:02.865417"
+    },
+    "category_プログラム生成": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_プログラム生成_20250613_143157.png",
+      "description": "プログラム生成カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:03.865760"
+    },
+    "category_ログ・履歴": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_ログ_履歴_20250613_143157.png",
+      "description": "ログ・履歴カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:04.866054"
+    },
+    "category_ダッシュボード": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_ダッシュボード_20250613_143157.png",
+      "description": "ダッシュボードカテゴリ画面",
+      "timestamp": "2025-06-13T14:32:05.866361"
+    },
+    "category_データ管理": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_データ管理_20250613_143157.png",
+      "description": "データ管理カテゴリ画面",
+      "timestamp": "2025-06-13T14:32:06.866767"
+    },
+    "category_ガイド・サポート": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/controller_category_ガイド_サポート_20250613_143157.png",
+      "description": "ガイド・サポートカテゴリ画面",
+      "timestamp": "2025-06-13T14:32:07.867140"
+    }
+  },
+  "summary": {
+    "api_tests": {
+      "total": 10,
+      "successful": 0,
+      "success_rate": 0.0
+    },
+    "screenshots": {
+      "total": 10,
+      "successful": 10,
+      "success_rate": 100.0
+    },
+    "overall_success": false
+  },
+  "test_duration": 10.846643924713135,
+  "timestamp": "2025-06-13T14:32:07.867400"
+}

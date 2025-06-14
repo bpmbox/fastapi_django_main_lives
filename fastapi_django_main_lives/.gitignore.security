@@ -1,0 +1,47 @@
+# セキュリティのため、以下のファイルはGitに含めません
+.env
+*.env
+.env.local
+.env.production
+.env.development
+
+# API Keys and Secrets
+api_keys.json
+secrets.json
+credentials.json
+
+# データベースファイル
+*.db
+*.sqlite*
+database/*.db
+
+# ログファイル
+*.log
+logs/
+
+# 一時ファイル
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Node modules
+node_modules/
+
+# IDE設定
+.vscode/settings.json
+.idea/
+
+# OS関連
+.DS_Store
+Thumbs.db
+
+# プライベートキー
+*.pem
+*.key
+private_keys/

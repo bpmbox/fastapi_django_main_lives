@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>OCR App</title>
+</head>
+<body>
+    <h1>OCR App</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" name="img_ocr" placeholder="Enter OCR result">
+        <button type="submit">Save OCR result</button>
+    </form>
+    <hr>
+    <a href="{% url 'plantuml_view' %}">View PlantUML diagram</a>
+</body>
+</html>

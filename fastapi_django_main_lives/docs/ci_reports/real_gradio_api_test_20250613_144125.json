@@ -1,0 +1,271 @@
+{
+  "available_apis": {
+    "create_prompt": {
+      "name": "create_prompt",
+      "api_name": "/create_prompt",
+      "description": "プロンプト作成API",
+      "test_input": [
+        "テストプロンプト"
+      ],
+      "category": "プロンプト管理",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.355476"
+    },
+    "save_prompt": {
+      "name": "save_prompt",
+      "api_name": "/save_prompt",
+      "description": "プロンプト保存API",
+      "test_input": [
+        "テスト",
+        "テストプロンプト"
+      ],
+      "category": "プロンプト管理",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.355503"
+    },
+    "load_prompts": {
+      "name": "load_prompts",
+      "api_name": "/load_prompts",
+      "description": "プロンプト読み込みAPI",
+      "test_input": [],
+      "category": "プロンプト管理",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.355519"
+    },
+    "generate_response": {
+      "name": "generate_response",
+      "api_name": "/generate_response",
+      "description": "レスポンス生成API",
+      "test_input": [
+        "こんにちは"
+      ],
+      "category": "AI応答",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.355535"
+    },
+    "conversation_log": {
+      "name": "conversation_log",
+      "api_name": "/log_conversation",
+      "description": "会話ログAPI",
+      "test_input": [
+        "テスト会話"
+      ],
+      "category": "ログ管理",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357517"
+    },
+    "file_upload": {
+      "name": "file_upload",
+      "api_name": "/upload_file",
+      "description": "ファイルアップロードAPI",
+      "test_input": [
+        null
+      ],
+      "category": "ファイル管理",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357596"
+    },
+    "database_query": {
+      "name": "database_query",
+      "api_name": "/execute_query",
+      "description": "データベースクエリAPI",
+      "test_input": [
+        "SELECT 1"
+      ],
+      "category": "データベース",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357653"
+    },
+    "github_issue": {
+      "name": "github_issue",
+      "api_name": "/create_issue",
+      "description": "GitHub Issue作成API",
+      "test_input": [
+        "テストタイトル",
+        "テスト本文"
+      ],
+      "category": "GitHub連携",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357737"
+    },
+    "chat_response": {
+      "name": "chat_response",
+      "api_name": "/chat",
+      "description": "チャットAPI",
+      "test_input": [
+        "こんにちは"
+      ],
+      "category": "チャット",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357810"
+    },
+    "interpreter": {
+      "name": "interpreter",
+      "api_name": "/interpret",
+      "description": "インタープリターAPI",
+      "test_input": [
+        "print('Hello World')"
+      ],
+      "category": "コード実行",
+      "available": true,
+      "last_checked": "2025-06-13T14:41:25.357891"
+    }
+  },
+  "api_test_results": {
+    "create_prompt": {
+      "name": "create_prompt",
+      "api_name": "/create_prompt",
+      "description": "プロンプト作成API",
+      "category": "プロンプト管理",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /create_prompt.",
+      "timestamp": "2025-06-13T14:41:25.358085"
+    },
+    "save_prompt": {
+      "name": "save_prompt",
+      "api_name": "/save_prompt",
+      "description": "プロンプト保存API",
+      "category": "プロンプト管理",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /save_prompt.",
+      "timestamp": "2025-06-13T14:41:25.557905"
+    },
+    "load_prompts": {
+      "name": "load_prompts",
+      "api_name": "/load_prompts",
+      "description": "プロンプト読み込みAPI",
+      "category": "プロンプト管理",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /load_prompts.",
+      "timestamp": "2025-06-13T14:41:25.774053"
+    },
+    "generate_response": {
+      "name": "generate_response",
+      "api_name": "/generate_response",
+      "description": "レスポンス生成API",
+      "category": "AI応答",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /generate_response.",
+      "timestamp": "2025-06-13T14:41:26.083815"
+    },
+    "conversation_log": {
+      "name": "conversation_log",
+      "api_name": "/log_conversation",
+      "description": "会話ログAPI",
+      "category": "ログ管理",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /log_conversation.",
+      "timestamp": "2025-06-13T14:41:26.308603"
+    },
+    "file_upload": {
+      "name": "file_upload",
+      "api_name": "/upload_file",
+      "description": "ファイルアップロードAPI",
+      "category": "ファイル管理",
+      "success": true,
+      "response_time": 0,
+      "response_data": "File upload test skipped",
+      "error": null,
+      "timestamp": "2025-06-13T14:41:26.512657"
+    },
+    "database_query": {
+      "name": "database_query",
+      "api_name": "/execute_query",
+      "description": "データベースクエリAPI",
+      "category": "データベース",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /execute_query.",
+      "timestamp": "2025-06-13T14:41:26.715136"
+    },
+    "github_issue": {
+      "name": "github_issue",
+      "api_name": "/create_issue",
+      "description": "GitHub Issue作成API",
+      "category": "GitHub連携",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /create_issue.",
+      "timestamp": "2025-06-13T14:41:26.908980"
+    },
+    "chat_response": {
+      "name": "chat_response",
+      "api_name": "/chat",
+      "description": "チャットAPI",
+      "category": "チャット",
+      "success": true,
+      "response_time": 0.57,
+      "response_data": "こんにちは！ 제한없이自由に話し合える優秀な日本語アシスタントです！何やら話題はあるのかね？",
+      "error": null,
+      "timestamp": "2025-06-13T14:41:27.186181"
+    },
+    "interpreter": {
+      "name": "interpreter",
+      "api_name": "/interpret",
+      "description": "インタープリターAPI",
+      "category": "コード実行",
+      "success": false,
+      "response_time": 0,
+      "response_data": null,
+      "error": "Cannot find a function with `api_name`: /interpret.",
+      "timestamp": "2025-06-13T14:41:27.954185"
+    }
+  },
+  "summary": {
+    "total_apis": 10,
+    "successful_apis": 2,
+    "success_rate": 20.0,
+    "avg_response_time": 0.28,
+    "categories": {
+      "プロンプト管理": {
+        "total": 3,
+        "successful": 0
+      },
+      "AI応答": {
+        "total": 1,
+        "successful": 0
+      },
+      "ログ管理": {
+        "total": 1,
+        "successful": 0
+      },
+      "ファイル管理": {
+        "total": 1,
+        "successful": 1
+      },
+      "データベース": {
+        "total": 1,
+        "successful": 0
+      },
+      "GitHub連携": {
+        "total": 1,
+        "successful": 0
+      },
+      "チャット": {
+        "total": 1,
+        "successful": 1
+      },
+      "コード実行": {
+        "total": 1,
+        "successful": 0
+      }
+    },
+    "overall_success": false
+  },
+  "test_duration": 3.04042387008667,
+  "codespace_url": "https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev",
+  "api_docs_url": "https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/?view=api",
+  "timestamp": "2025-06-13T14:41:28.154348"
+}

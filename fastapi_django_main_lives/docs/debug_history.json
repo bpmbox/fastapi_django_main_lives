@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2025-06-12T00:19:53.941763",
+    "url": "https://json-test.example.com",
+    "description": "JSON版DIテスト",
+    "selector": null,
+    "capture_path": "/tmp/json_test.png",
+    "analysis_prompt": "JSON用プロンプト",
+    "analysis_result": null,
+    "status": "captured",
+    "created_at": "2025-06-12T00:19:53.941772",
+    "updated_at": "2025-06-12T00:19:53.941772"
+  }
+]

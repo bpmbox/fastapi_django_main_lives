@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}API Documentation{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; min-height: 400px;">
+    <h1 style="font-size: 3rem; margin-bottom: 1rem;">📚 API Documentation</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9;">
+        Redirecting to FastAPI docs...
+    </p>
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+        <a href="/docs" class="btn btn-primary" style="padding: 1rem 2rem; background: rgba(255,255,255,0.2); border-radius: 8px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.3);">
+            Interactive API Docs (Swagger)
+        </a>
+        <a href="/redoc" class="btn btn-primary" style="padding: 1rem 2rem; background: rgba(255,255,255,0.2); border-radius: 8px; text-decoration: none; color: white; border: 1px solid rgba(255,255,255,0.3);">
+            Alternative API Docs (ReDoc)
+        </a>
+    </div>
+</div>
+
+<script>
+    // Auto redirect after 1 second
+    setTimeout(() => {
+        window.location.href = '/docs';
+    }, 1000);
+</script>
+{% endblock %}

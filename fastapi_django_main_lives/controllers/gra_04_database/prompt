@@ -1,0 +1,14 @@
+gradioで下記のpostgressのCRUD画面を作成して
+postgresql://miyataken999:yz1wPf4KrWTm@ep-odd-mode-93794521.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+テーブルは下記
+CREATE TABLE rides (
+    ride_id SERIAL PRIMARY KEY,
+    rideable_type VARCHAR(50) NOT NULL,
+    start_station_id INT,
+    start_station_name VARCHAR(255),
+    end_station_id INT,
+    end_station_name VARCHAR(255),
+    started_at VARCHAR(255),
+    ended_at VARCHAR(255),
+    member_casual VARCHAR(50) NOT NULL

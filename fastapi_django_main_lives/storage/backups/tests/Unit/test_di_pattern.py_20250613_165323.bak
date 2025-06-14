@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+"""
+DI（依存性注入）パターンのテストスクリプト
+==========================================
+"""
+
+import asyncio
+import sys
+sys.path.append('/workspaces/fastapi_django_main_live')
+
+from controllers.gra_03_programfromdocs.database_di_layer import (
+    RepositoryFactory,
+    DebugHistoryService,
+    DebugRecord
+)
+
+async def test_di_pattern():
+    """DIパターンのテスト"""
+    print("🧪 依存性注入パターンのテスト開始")
+    
+    # 1. SQLite版でテスト
+    print("\n📊 SQLite リポジトリのテスト")
+    sqlite_service = RepositoryFactory.create_service("sqlite")
+    
+    # デバッグ記録を保存
+    record_id = await sqlite_service.save_debug_session(
+        url="https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+        description="DI統合テスト用のデバッグセッション",
+        selector=".gradio-container",
+        capture_path="/workspaces/fastapi_django_main_live/docs/images/debug_captures/test_di.png",
+        analysis_prompt="DI統合テスト用プロンプト"
+    )
+    
+    print(f"✅ SQLite保存成功: Record ID {record_id}")
+    
+    # 履歴取得
+    history = await sqlite_service.get_debug_history_formatted(5)
+    print(f"✅ 履歴取得成功:\n{history}")
+    
+    # 2. JSON版でテスト
+    print("\n📁 JSON リポジトリのテスト")
+    json_service = RepositoryFactory.create_service("json")
+    
+    record_id_json = await json_service.save_debug_session(
+        url="https://json-test.example.com",
+        description="JSON版DIテスト",
+        selector=None,
+        capture_path="/tmp/json_test.png",
+        analysis_prompt="JSON用プロンプト"
+    )
+    
+    print(f"✅ JSON保存成功: Record ID {record_id_json}")
+    
+    # 3. 統計情報テスト
+    print("\n📈 統計情報のテスト")
+    stats = await sqlite_service.get_url_statistics("https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/")
+    print(f"✅ 統計情報: {stats}")
+    
+    # 4. 検索テスト
+    print("\n🔍 検索機能のテスト")
+    search_results = await sqlite_service.search_debug_history("DI統合")
+    print(f"✅ 検索結果: {len(search_results)}件見つかりました")
+    
+    for result in search_results[:3]:
+        print(f"   - {result.description[:50]}...")
+    
+    # 5. 解析結果更新テスト
+    print("\n🔄 解析結果更新のテスト")
+    if record_id:
+        update_success = await sqlite_service.complete_analysis(
+            record_id, 
+            "DIテスト完了: 正常に動作しています"
+        )
+        print(f"✅ 解析結果更新: {'成功' if update_success else '失敗'}")
+    
+    print("\n🎉 DIパターンテスト完了!")
+    print("=" * 60)
+    print("✅ SQLite永続化 - 本番環境用")
+    print("✅ JSONファイル - 開発・テスト用")
+    print("✅ 依存性注入 - 柔軟な実装切り替え")
+    print("✅ サービス層 - ビジネスロジック分離")
+    print("✅ 検索・統計 - 高度なデータ操作")
+
+if __name__ == "__main__":
+    asyncio.run(test_di_pattern())

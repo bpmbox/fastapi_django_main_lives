@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  gradio-fastapi-django:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: gradio-fastapi-django-main
+    ports:
+      - "7860:7860"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.groq.com/openai/v1}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - MODEL_NAME=${MODEL_NAME:-llama3-8b-8192}
+      - LOCAL_MODEL=${LOCAL_MODEL:-true}
+      - GOOGLE_APPLICATION_CREDENTIALS_CONTENT=${GOOGLE_APPLICATION_CREDENTIALS_CONTENT}
+      - GOOGLE_PROJECT_ID=${GOOGLE_PROJECT_ID}
+      - GOOGLE_CLIENT_EMAIL=${GOOGLE_CLIENT_EMAIL}
+      - APPSHEET_APPID=${APPSHEET_APPID}
+      - APPSHEET_KEY=${APPSHEET_KEY}
+      - ASSSHEET_APPID=${ASSSHEET_APPID}
+      - ChannelAccessToken=${ChannelAccessToken}
+      - ChannelID=${ChannelID}
+      - ChannelSecret=${ChannelSecret}
+      - WEBHOOK_GAS=${WEBHOOK_GAS}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - api_key=${api_key}
+      - chat_url=${chat_url}
+      - hf_token=${hf_token}
+      - n8nhook=${n8nhook}
+      - openinterpreter_secret=${openinterpreter_secret}
+      - postgre_host=${postgre_host}
+      - postgre_pass=${postgre_pass}
+      - postgre_url=${postgre_url}
+      - postgre_user=${postgre_user}
+      - token=${token}
+      - github_user=${github_user}
+      - github_token=${github_token}
+      - TOOL_KIT_DIR=usage
+    volumes:
+      - ./cache:/app/cache
+      - ./gradio_cached_examples:/app/gradio_cached_examples
+      - ./static:/app/static
+      - ./templates:/app/templates
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7860/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      - gradio-network
+
+  # Optional: Add a database service if needed
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: postgres-db
+  #   environment:
+  #     POSTGRES_DB: gradio_app
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   networks:
+  #     - gradio-network
+
+networks:
+  gradio-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

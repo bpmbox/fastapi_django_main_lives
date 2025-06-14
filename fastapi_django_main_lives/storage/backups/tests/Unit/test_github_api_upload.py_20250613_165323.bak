@@ -1,0 +1,120 @@
+#!/usr/bin/env python3
+"""
+GitHub API を使用して画像をアップロードするテスト
+"""
+
+import base64
+import json
+import requests
+import subprocess
+from pathlib import Path
+
+def get_github_token():
+    """GitHub トークンを取得"""
+    try:
+        result = subprocess.run(['gh', 'auth', 'token'], capture_output=True, text=True, check=True)
+        return result.stdout.strip()
+    except subprocess.CalledProcessError:
+        print("❌ GitHub認証トークンの取得に失敗")
+        return None
+
+def upload_image_via_api(image_path, issue_number):
+    """GitHub API経由で画像をアップロード"""
+    token = get_github_token()
+    if not token:
+        return False
+    
+    # 画像をbase64エンコード
+    with open(image_path, 'rb') as f:
+        image_data = f.read()
+        image_base64 = base64.b64encode(image_data).decode('utf-8')
+    
+    # GitHub API endpoints
+    repo_owner = "miyataken999"
+    repo_name = "fastapi_django_main_live"
+    
+    # 1. まず画像をリポジトリにアップロード（GitHub経由でホスト）
+    upload_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contents/temp_images/{image_path.name}"
+    
+    headers = {
+        'Authorization': f'token {token}',
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+    }
+    
+    upload_data = {
+        'message': f'Upload image for issue #{issue_number}',
+        'content': image_base64
+    }
+    
+    print(f"📤 GitHub APIで画像アップロード中...")
+    
+    try:
+        response = requests.put(upload_url, headers=headers, json=upload_data)
+        
+        if response.status_code == 201:
+            response_data = response.json()
+            download_url = response_data['content']['download_url']
+            print(f"✅ 画像アップロード成功: {download_url}")
+            
+            # 2. イシューにコメントを追加（画像URLを含む）
+            comment_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/issues/{issue_number}/comments"
+            
+            comment_body = f"""## 📷 GitHub API経由画像アップロードテスト
+
+**ファイル名**: `{image_path.name}`
+**サイズ**: {len(image_data)} bytes
+**アップロード先**: {download_url}
+
+### キャプチャ画像
+
+![{image_path.name}]({download_url})
+
+### テスト結果
+- ✅ 画像のbase64エンコード: 成功
+- ✅ GitHub APIアップロード: 成功  
+- ✅ Markdownでの画像表示: 上記参照
+"""
+            
+            comment_data = {
+                'body': comment_body
+            }
+            
+            comment_response = requests.post(comment_url, headers=headers, json=comment_data)
+            
+            if comment_response.status_code == 201:
+                print("✅ コメント追加成功")
+                return True
+            else:
+                print(f"❌ コメント追加失敗: {comment_response.status_code}")
+                print(f"❌ Response: {comment_response.text}")
+                return False
+                
+        else:
+            print(f"❌ 画像アップロード失敗: {response.status_code}")
+            print(f"❌ Response: {response.text}")
+            return False
+            
+    except Exception as e:
+        print(f"❌ API呼び出しエラー: {e}")
+        return False
+
+if __name__ == "__main__":
+    # テスト実行
+    image_path = Path("/workspaces/fastapi_django_main_live/docs/images/debug_captures/debug_capture_20250612_001613_fullpage.png")
+    issue_number = "32"
+    
+    print("🚀 GitHub API 画像アップロードテスト開始")
+    print("=" * 50)
+    
+    if image_path.exists():
+        success = upload_image_via_api(image_path, issue_number)
+        
+        if success:
+            print("\n🎉 GitHub API画像アップロードテスト成功！")
+            print("🌐 イシューをブラウザで確認してください:")
+            print(f"   https://github.com/miyataken999/fastapi_django_main_live/issues/{issue_number}")
+        else:
+            print("\n❌ GitHub API画像アップロードテスト失敗")
+    else:
+        print(f"❌ 画像ファイルが見つかりません: {image_path}")

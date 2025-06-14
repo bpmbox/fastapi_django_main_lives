@@ -1,0 +1,15 @@
+polls_project/
+polls_project/
+settings.py
+urls.py
+wsgi.py
+manage.py
+polls/
+admin.py
+apps.py
+models.py
+tests.py
+urls.py
+views.py
+__init__.py
+requirements.txt

@@ -1,0 +1,8 @@
+line-length = 88
+
+# Global configuration
+ignore = ["E501", "W605", "E203"]
+
+# Plugin-specific configurations
+[mccabe]
+max-complexity = 12

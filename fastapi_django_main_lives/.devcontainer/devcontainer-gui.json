@@ -1,0 +1,45 @@
+{
+  "name": "FastAPI Django + RPA GUI Environment",
+  "dockerComposeFile": "docker-compose-gui.yml",
+  "service": "app-gui", 
+  "workspaceFolder": "/workspace",
+  
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {
+      "version": "latest",
+      "enableNonRootDocker": "true"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "18"
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.11"
+    }
+  },
+  
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "bradlc.vscode-tailwindcss",
+        "esbenp.prettier-vscode",
+        "ms-vscode.vscode-typescript-next",
+        "ms-playwright.playwright"
+      ]
+    }
+  },
+  
+  "forwardPorts": [
+    7860,  // Gradio
+    6080,  // noVNC
+    5900   // VNC
+  ],
+  
+  "postCreateCommand": "bash .devcontainer/post-create-gui.sh",
+  
+  "remoteUser": "vscode",
+  
+  "mounts": [
+    "source=dind-var-lib-docker,target=/var/lib/docker,type=volume"
+  ]
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📸 RPA画像取得ギャラリー</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .image-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        .image-info {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .stats {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 RPA画像取得ギャラリー</h1>
+        <div class="stats">
+            <p>🎯 取得画像数: <strong>7</strong></p>
+            <p>📅 生成日時: <strong>2025年06月11日 12:11:31</strong></p>
+        </div>
+        <div class="gallery">
+            
+            <div class="image-card">
+                <img src="images/collected/test_1/image_1.jpg" alt="取得画像 1">
+                <div class="image-info">
+                    <strong>#1</strong> - image_1.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_1/image_5.jpg" alt="取得画像 2">
+                <div class="image-info">
+                    <strong>#2</strong> - image_5.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_2/image_1.jpg" alt="取得画像 3">
+                <div class="image-info">
+                    <strong>#3</strong> - image_1.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_2/image_2.jpg" alt="取得画像 4">
+                <div class="image-info">
+                    <strong>#4</strong> - image_2.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_2/image_3.jpg" alt="取得画像 5">
+                <div class="image-info">
+                    <strong>#5</strong> - image_3.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_2/image_4.jpg" alt="取得画像 6">
+                <div class="image-info">
+                    <strong>#6</strong> - image_4.jpg
+                </div>
+            </div>
+            
+            <div class="image-card">
+                <img src="images/collected/test_2/118224532-3842c400-b438-11eb-923d-a5f66fa6785a.png" alt="取得画像 7">
+                <div class="image-info">
+                    <strong>#7</strong> - 118224532-3842c400-b438-11eb-923d-a5f66fa6785a.png
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+</html>

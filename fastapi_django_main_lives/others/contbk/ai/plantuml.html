@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PlantUML Diagram</title>
+    <script src="https://cdn.jsdelivr.net/npm/plantuml-encoder@1.0.1/dist/plantuml-encoder.min.js"></script>
+  </head>
+  <body>
+    <h1>PlantUML Diagram</h1>
+    <div id="diagram"></div>
+    <script>
+      const diagram = `@startuml
+      class BotGasMainDev {
+        - imgOcr: string
+        - googleChatInsert(text: string)
+      }
+      class LINEREQ {
+        - loggers(stack: string, message: string)
+        - googleChatInsert(text: string)
+      }
+      BotGasMainDev -> LINEREQ: uses
+      @enduml`;
+      const encodedDiagram = plantumlEncoder.encode(diagram);
+      document.getElementById('diagram').innerHTML = `<img src="https://www.plantuml.com/plantuml/svg/${encodedDiagram}">`;
+    </script>
+  </body>
+</html>

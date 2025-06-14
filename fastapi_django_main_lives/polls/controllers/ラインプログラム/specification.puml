@@ -1,0 +1,30 @@
+@startuml
+class LineApi {
+  - accessToken: string
+  - getAccessToken(): string
+}
+
+class Blog {
+  - imageUrl: string
+  - getImageUrl(): string
+}
+
+class GoogleDrive {
+  - folderId: string
+  - createFile(blob: Blob): File
+}
+
+class Script {
+  - getLineData(): LineData
+  - getBlogImageData(): ImageUrl[]
+  - saveImageDataToDrive(ImageUrl[]): void
+  - main(): void
+}
+
+LineApi -> Script: getAccessToken
+Blog -> Script: getImageUrl
+GoogleDrive -> Script: createFile
+Script -> LineApi: getLineData
+Script -> Blog: getBlogImageData
+Script -> GoogleDrive: saveImageDataToDrive
+@enduml

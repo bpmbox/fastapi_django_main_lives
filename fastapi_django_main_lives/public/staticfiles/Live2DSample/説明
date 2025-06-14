@@ -1,0 +1,19 @@
+編集するのはindex.html,index.js,live2d.js
+の3つです。流れとしては
+
+index.htmlにて
+・live2dcubismcore.jsの読み込み+各種(live2d,PixiJS,kalidokit)CDNの読み込み
+・表示するcanvasの定義
+
+live2d.jsにて
+・live2dフォルダの読み込み(フォルダ構成がmodel3.jsonあるものにして下さい)
+・モデルの位置、大きさ、背景の設定　ドラッグ等出来なくするには該当部分コードを消してください。
+・変数appをindex.jsで使うためにグローバル変数にしています。
+
+index.jsにて
+・HTMLボタンにてMotion関数を発動させたら上記appからモデルのモーションを作動させる！
+
+live2dcubismcore.jsとHiyoriフォルダ内は基本編集しません。
+一応model3.jsonはIdleとTapbodyなどアニメーション周りの
+構成を見るために使うかもです。
+ 「本作品のキャラクターには株式会社Live2Dの著作物が用いられています。」

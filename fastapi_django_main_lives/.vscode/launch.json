@@ -1,0 +1,94 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "name": "🎯 Remote Attach (現在のプロセス)",
+        "type": "debugpy",
+        "request": "attach",
+        "connect": {
+          "host": "localhost",
+          "port": 5678
+        },
+        "justMyCode": false,
+        "pathMappings": [
+          {
+            "localRoot": "${workspaceFolder}",
+            "remoteRoot": "${workspaceFolder}"
+          }
+        ]
+      },
+      {
+        "name": "✅ 最小限デバッグ (確実動作)",
+        "type": "debugpy", 
+        "request": "launch",
+        "program": "${workspaceFolder}/minimal_debug.py",
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "cwd": "${workspaceFolder}",
+        "stopOnEntry": false,
+        "python": "/home/codespace/.python/current/bin/python3"
+      },
+      {
+        "name": "🚀 App.py Debug (メインアプリ)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/app.py",
+        "args": ["--debug"],
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}",
+          "DJANGO_SETTINGS_MODULE": "mysite.settings"
+        },
+        "cwd": "${workspaceFolder}",
+        "stopOnEntry": false,
+        "subProcess": false,
+        "python": "/home/codespace/.python/current/bin/python3"
+      },
+      {
+        "name": "🌐 WEB Debug Server (ブラウザでデバッグ)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/web_debug_simple.py",
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}",
+          "DJANGO_SETTINGS_MODULE": "mysite.settings"
+        },
+        "cwd": "${workspaceFolder}",
+        "stopOnEntry": false,
+        "subProcess": false
+      },
+      {
+        "name": "🔧 chat_with_interpreter デバッグ",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/debug_test.py",
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}",
+          "DJANGO_SETTINGS_MODULE": "mysite.settings"
+        },
+        "cwd": "${workspaceFolder}",
+        "stopOnEntry": false
+      },
+      {
+        "name": "🎯 Chat Direct Debug (直接デバッグ)",
+        "type": "debugpy",
+        "request": "launch",
+        "program": "${workspaceFolder}/chat_debug_direct.py",
+        "console": "integratedTerminal",
+        "justMyCode": false,
+        "env": {
+          "PYTHONPATH": "${workspaceFolder}",
+          "DJANGO_SETTINGS_MODULE": "mysite.settings"
+        },
+        "cwd": "${workspaceFolder}",
+        "stopOnEntry": false,
+        "python": "/home/codespace/.python/current/bin/python3"
+      }
+    ]
+  }
+  

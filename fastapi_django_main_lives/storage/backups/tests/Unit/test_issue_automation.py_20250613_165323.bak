@@ -1,0 +1,340 @@
+#!/usr/bin/env python3
+"""
+GitHub Issue自動作成テストスクリプト
+今までの開発過程で発見された問題点をISSUEとして作成
+"""
+
+import sys
+import os
+from datetime import datetime
+
+# プロジェクトルートを追加
+sys.path.append('/workspaces/fastapi_django_main_live')
+
+# GitHub Issue作成機能をインポート
+try:
+    from controllers.conversation_logger import create_quick_issue, conversation_logger
+    print("✅ GitHub Issue作成モジュールを正常にインポート")
+except ImportError as e:
+    print(f"❌ インポートエラー: {e}")
+    print("GitHub Issue作成機能が見つかりません")
+    sys.exit(1)
+
+def create_development_issues():
+    """今までの開発で発見された問題をISSUEとして作成"""
+    
+    issues_created = []
+    
+    # 問題1: Hugging Face Space自動デプロイの認証問題
+    issue1 = {
+        "title": "🚀 Hugging Face Space自動デプロイ認証問題の修正",
+        "body": """## 🔥 問題の詳細
+
+### 発生した問題
+GitHub ActionsからHugging Face Spaceへの自動デプロイ時に認証エラーが発生
+
+### 現象
+- `git push origin main` 時に403エラー
+- GitHub push protectionがHugging Face Tokenを検出してブロック
+- ハードコードされたトークンが原因
+
+### 解決策
+- [x] 環境変数による認証に変更
+- [x] GitHub Secretsの適切な設定
+- [x] トークンのハードコード削除
+
+### 現在の状況
+✅ **解決済み** - GitHub Actionsワークフロー正常動作確認済み
+
+### 関連ファイル
+- `.github/workflows/deploy-to-hf.yml`
+- `force_hf_push.sh` (削除済み)
+- `sync_with_hf.sh` (削除済み)
+
+### テスト方法
+```bash
+git push origin main
+gh run list --limit 5
+```
+
+### 学習ポイント
+- GitHub push protectionの理解
+- 環境変数による安全な認証方式
+- CI/CDパイプラインのセキュリティベストプラクティス""",
+        "labels": ["bug", "enhancement", "python"]
+    }
+    
+    # 問題2: Git LFS大容量ファイル処理問題
+    issue2 = {
+        "title": "📦 Git LFS大容量ファイル処理とプッシュエラーの解決",
+        "body": """## 🔥 問題の詳細
+
+### 発生した問題
+大容量ファイル（Jupyter Notebook、データベースファイル等）のGitプッシュ時にエラー
+
+### 現象
+- `system_workflow_analysis.ipynb` (37KB) のプッシュ失敗
+- `prompts.db`, `chat_history.db` 等のデータベースファイル同期問題
+- Git LFS設定の不整合
+
+### 解決策
+- [x] `.gitattributes` でLFS設定を適切に構成
+- [x] バイナリファイルの適切な除外設定
+- [x] rsyncによる選択的ファイル同期
+
+### 現在の状況
+✅ **解決済み** - Jupyter Notebook正常にHugging Face Spaceにデプロイ完了
+
+### 関連ファイル
+- `.gitattributes`
+- `.gitignore`
+- `system_workflow_analysis.ipynb`
+
+### テスト方法
+```bash
+git lfs ls-files
+git status
+ls -la *.ipynb *.db
+```
+
+### 学習ポイント
+- Git LFSの適切な使用方法
+- 大容量ファイルの効率的な管理
+- バイナリファイルとテキストファイルの使い分け""",
+        "labels": ["enhancement", "system-generation"]
+    }
+    
+    # 問題3: GitHub Actions workflow設定とSecretsの最適化
+    issue3 = {
+        "title": "⚙️ GitHub Actions Workflow設定とSecrets管理の改善",
+        "body": """## 🚀 改善の詳細
+
+### 改善点
+GitHub ActionsからHugging Face Spaceへの自動デプロイシステムの最適化
+
+### 実装した機能
+1. **自動デプロイワークフロー**
+   - プッシュ時の自動トリガー
+   - 手動実行オプション（workflow_dispatch）
+   - 包括的なファイル同期
+
+2. **セキュリティ強化**
+   - GitHub Secretsによる安全な認証
+   - トークンのハードコード完全除去
+   - 環境変数ベースの設定
+
+3. **詳細ログとモニタリング**
+   - ファイル同期状況の詳細出力
+   - デプロイサマリーレポート
+   - エラーハンドリングの強化
+
+### ワークフロー内容
+```yaml
+name: 🚀 Deploy to Hugging Face Space
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - Checkout repository
+      - Setup Python
+      - Install dependencies
+      - Deploy to HF Space
+      - Generate summary
+```
+
+### 現在の状況
+✅ **完了** - 自動デプロイシステム正常動作中
+
+### テスト結果
+- ✅ GitHub → Hugging Face Space 自動同期
+- ✅ Jupyter Notebook デプロイ成功
+- ✅ Controllers/Routers ディレクトリ同期
+- ✅ エラーハンドリング機能確認
+
+### 学習ポイント
+- CI/CDパイプラインの設計
+- GitHub Actionsのベストプラクティス
+- マルチプラットフォーム連携（GitHub ↔ Hugging Face）""",
+        "labels": ["enhancement", "system-generation"]
+    }
+    
+    # 問題4: システムワークフロー可視化とMermaid図表の作成
+    issue4 = {
+        "title": "📊 システムワークフロー可視化とMermaid図表システムの構築",
+        "body": """## 🎯 開発目標
+
+### 実装した機能
+複雑なシステムワークフローをMermaidダイアグラムで可視化するJupyter Notebookシステム
+
+### 作成したMermaid図表
+1. **Overall System Flow** - 全体ワークフロー
+2. **Database ERD** - approval_queue + execution_log関係図
+3. **GitHub API Integration** - シーケンス図
+4. **Google Chat Notification** - 通知フロー
+5. **System Generation Process** - 自動生成プロセス
+6. **Complete Execution Workflow** - エラーハンドリング含む完全フロー
+
+### Jupyter Notebook構成
+- **ファイル名**: `system_workflow_analysis.ipynb` (37KB)
+- **セル数**: 12セル（マークダウン + Python）
+- **機能**: インタラクティブ分析、リアルタイム監視
+
+### 技術的成果
+- ✅ Mermaidフローチャート自動生成
+- ✅ データベース関係図（ERD）
+- ✅ API統合シーケンス図
+- ✅ エラーハンドリングフロー
+- ✅ Hugging Face Space統合
+
+### デプロイ状況
+🌐 **ライブ公開中**: https://huggingface.co/spaces/kenken999/fastapi_django_main_live/blob/main/system_workflow_analysis.ipynb
+
+### コード例
+```python
+# Mermaid図表の動的生成
+def generate_system_flow():
+    return '''
+    flowchart TD
+        A[GitHub ISSUE] --> B[Issue Monitor]
+        B --> C[SQLite Approval Queue]
+        C --> D[Manual Approval Process]
+        D --> E[ApprovedItemExecutor]
+        E --> F[System Generation]
+        F --> G[GitHub Repository Creation]
+        G --> H[Google Chat Notification]
+    '''
+```
+
+### 学習ポイント
+- Jupyter Notebookによるドキュメント化
+- Mermaidダイアグラムの効果的な活用
+- 複雑システムの可視化手法
+- インタラクティブな分析環境構築""",
+        "labels": ["enhancement", "documentation"]
+    }
+    
+    # 問題5: 今後の改善提案
+    issue5 = {
+        "title": "🔮 システム改善提案とロードマップ",
+        "body": """## 🚀 今後の改善提案
+
+### 現在のシステム状況
+✅ **GitHub Actions → Hugging Face Space 自動デプロイ** 完了
+✅ **Jupyter Notebook システムワークフロー可視化** 完了
+✅ **Mermaid図表による詳細分析** 完了
+
+### 提案する改善点
+
+#### 1. 🔄 リアルタイム監視システム
+- [ ] GitHub Actionsの実行状況リアルタイム表示
+- [ ] Hugging Face Space健康状態モニタリング
+- [ ] デプロイ失敗時の自動通知システム
+
+#### 2. 📊 メトリクス収集とダッシュボード
+- [ ] デプロイ頻度・成功率の統計
+- [ ] ファイル同期パフォーマンス測定
+- [ ] ユーザーアクセス統計
+
+#### 3. 🤖 AI統合強化
+- [ ] デプロイ失敗原因の自動分析
+- [ ] コード品質チェックの自動化
+- [ ] システム最適化提案の自動生成
+
+#### 4. 🔐 セキュリティ強化
+- [ ] トークンローテーション自動化
+- [ ] アクセスログ監査機能
+- [ ] 権限管理の詳細化
+
+#### 5. 📱 ユーザビリティ改善
+- [ ] ワンクリックデプロイ機能
+- [ ] デプロイ状況の可視化UI
+- [ ] 設定管理の簡素化
+
+### 実装優先度
+1. **高**: リアルタイム監視システム
+2. **中**: メトリクス収集
+3. **中**: AI統合強化
+4. **低**: UI改善
+
+### 期待される効果
+- 🚀 開発効率の向上
+- 🛡️ システムの安定性向上  
+- 📈 保守性の改善
+- 🎯 問題の早期発見
+
+### 学習ポイント
+- 継続的改善の重要性
+- システム監視の必要性
+- 自動化による品質向上""",
+        "labels": ["enhancement", "system-generation"]
+    }
+    
+    # ISSUEを順次作成
+    issues = [issue1, issue2, issue3, issue4, issue5]
+    
+    print(f"\n🚀 {len(issues)}件のGitHub ISSUEを作成します...")
+    
+    for i, issue in enumerate(issues, 1):
+        try:
+            print(f"\n{i}. 作成中: {issue['title']}")
+            
+            # GitHub Issue作成（conversation_loggerを使用）
+            result = create_quick_issue(
+                title=issue['title'],
+                user_msg="システム開発過程で発見された問題点",
+                assistant_msg=issue['body'],
+                labels=issue['labels']
+            )
+            
+            if result:
+                print(f"   ✅ 作成成功: GitHub Issue created")
+                issues_created.append(f"Issue #{i}: {issue['title']}")
+            else:
+                print(f"   ❌ 作成失敗")
+                
+        except Exception as e:
+            print(f"   ❌ エラー: {e}")
+    
+    return issues_created
+
+def main():
+    """メイン実行関数"""
+    print("🎯 GitHub Issue自動作成システムテスト開始")
+    print("=" * 50)
+    
+    # 環境確認
+    github_token = os.environ.get('GITHUB_TOKEN')
+    if not github_token:
+        print("❌ GITHUB_TOKEN環境変数が設定されていません")
+        return
+    
+    print("✅ GitHub Token確認済み")
+    
+    # ISSUE作成実行
+    try:
+        created_issues = create_development_issues()
+        
+        print("\n" + "=" * 50)
+        print("🎉 GitHub Issue作成完了!")
+        print(f"📊 作成したISSUE数: {len(created_issues)}")
+        
+        if created_issues:
+            print("\n📋 作成されたISSUE一覧:")
+            for i, url in enumerate(created_issues, 1):
+                print(f"  {i}. {url}")
+                
+            print(f"\n🌐 GitHub ISSUEページ: https://github.com/miyataken999/fastapi_django_main_live/issues")
+            
+        print("\n✅ 自動化システムテスト完了!")
+        
+    except Exception as e:
+        print(f"❌ メイン処理でエラー: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    main()

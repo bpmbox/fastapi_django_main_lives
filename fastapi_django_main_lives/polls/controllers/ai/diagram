@@ -1,0 +1,31 @@
+@startuml
+class LineApi {
+  - getLineData()
+}
+
+class BlogApi {
+  - getBlogImageData(lineData)
+}
+
+class DriveService {
+  - getDriveService()
+  - getFolderById(folderId)
+  - createFile(imageData, folder)
+}
+
+class ImageService {
+  - getImageData(imageUrl)
+}
+
+class Script {
+  - main()
+  - getLineData()
+  - getBlogImageData(lineData)
+  - saveImageToDrive(imageData)
+}
+
+LineApi -> Script: getLineData()
+BlogApi -> Script: getBlogImageData(lineData)
+DriveService -> Script: saveImageToDrive(imageData)
+ImageService -> Script: getImageData(imageUrl)
+@enduml

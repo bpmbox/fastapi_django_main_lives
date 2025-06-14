@@ -1,0 +1,10 @@
+{
+  "timeZone": "Asia/Tokyo",
+  "dependencies": {
+    "enabledAdvancedServices": []
+  },
+  "webapp": {
+    "executeAs": "USER_DEPLOYING",
+    "whoHasAccess": "ANYONE_ANONYMOUS"
+  }
+}

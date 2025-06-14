@@ -1,0 +1,17 @@
+project/
+src/
+__init__.py
+main.py
+models/
+__init__.py
+user.py
+repositories/
+__init__.py
+user_repository.py
+services/
+__init__.py
+user_service.py
+utils/
+__init__.py
+logger.py
+requirements.txt

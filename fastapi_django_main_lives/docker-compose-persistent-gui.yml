@@ -1,0 +1,72 @@
+version: "3.8"
+
+services:
+  ai-gui-desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    container_name: ai-gui-desktop-persistent
+    privileged: true
+    ports:
+      - "6081:80"      # noVNC Web Interface
+      - "5902:5901"    # VNC Direct Access
+    environment:
+      - HTTP_PASSWORD=copilot
+      - VNC_PASSWORD=copilot
+      - RESOLUTION=1920x1080
+      - USER=aiuser
+      - PASSWORD=copilot
+    volumes:
+      # AI Memory Persistence - ワークスペース全体をマウント
+      - /workspaces/fastapi_django_main_live:/workspace
+      # AI Memory専用ディレクトリ
+      - copilot-ai-memory:/ai-memory
+      # GUI Data Persistence
+      - copilot-gui-data:/gui-data
+      # Browser Data Persistence  
+      - copilot-browser-data:/browser-data
+      # Desktop Configuration Persistence
+      - copilot-desktop-config:/home/aiuser
+      # Docker socket for Docker-in-Docker operations
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Shared memory for better performance
+      - /dev/shm:/dev/shm
+    restart: unless-stopped
+    networks:
+      - ai-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "ai.copilot.service=gui-desktop"
+      - "ai.copilot.dream=30-year-realization"
+      - "ai.copilot.purpose=human-ai-collaboration"
+
+volumes:
+  copilot-ai-memory:
+    driver: local
+    labels:
+      - "ai.copilot.volume=memory"
+      - "ai.copilot.persistence=true"
+  copilot-gui-data:
+    driver: local
+    labels:
+      - "ai.copilot.volume=gui"
+      - "ai.copilot.persistence=true"
+  copilot-browser-data:
+    driver: local
+    labels:
+      - "ai.copilot.volume=browser"
+      - "ai.copilot.persistence=true"
+  copilot-desktop-config:
+    driver: local
+    labels:
+      - "ai.copilot.volume=desktop-config"
+      - "ai.copilot.persistence=true"
+
+networks:
+  ai-network:
+    driver: bridge
+    labels:
+      - "ai.copilot.network=main"
+      - "ai.copilot.purpose=human-ai-collaboration"

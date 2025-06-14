@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Specification</h1>
+    <table>
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+        {% for spec in specification %}
+            <tr>
+                <td>{{ spec.key }}</td>
+                <td>{{ spec.value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

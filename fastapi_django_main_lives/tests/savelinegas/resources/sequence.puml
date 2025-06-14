@@ -1,0 +1,7 @@
+@startuml
+participant Line as L
+participant Google Apps Script as G
+L->>G: Get image data
+G->>L: Return image data
+G->>Drive: Save image to Drive
+@enduml

@@ -1,0 +1,16 @@
+cloud_data_analysis_platform/
+data/
+raw/
+processed/
+models/
+dashboard/
+tableau/
+lookerstudio/
+requirements.txt
+main.py
+data_loader.py
+data_processor.py
+model_trainer.py
+dashboard_generator.py
+__init__.py
+README.md

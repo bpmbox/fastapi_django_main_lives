@@ -1,0 +1,10 @@
+{
+  "name": "line-blog-image-saver",
+  "version": "1.0.0",
+  "scripts": {
+    "deploy": "clasp push"
+  },
+  "dependencies": {
+    "@google/clasp": "^1.4.0"
+  }
+}

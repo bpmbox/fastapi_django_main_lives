@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc
+    container_name: ubuntu-desktop-vnc
+    privileged: true
+    ports:
+      - "6081:80"
+      - "5901:5901"  # VNC port
+    environment:
+      - HTTP_PASSWORD=mypassword
+      - VNC_PASSWORD=vncpassword
+      - RESOLUTION=1920x1080
+      - USER=root
+    volumes:
+      # 現在のワークスペースをマウント（Linuxパス）
+      - /workspaces/fastapi_django_main_lives:/code
+      - /dev/shm:/dev/shm
+      - /var/run/docker.sock:/var/run/docker.sock
+      # 追加のボリューム
+      - vnc_home:/home/ubuntu
+      - vnc_tmp:/tmp
+    restart: unless-stopped
+    networks:
+      - desktop-network
+    # デスクトップ環境での開発ツールをインストール
+    command: >
+      bash -c "
+        apt-get update &&
+        apt-get install -y python3 python3-pip nodejs npm git curl wget gpg &&
+        apt-get install -y firefox chromium-browser &&
+        apt-get install -y python3-tk python3-dev &&
+        pip3 install selenium pyautogui opencv-python pillow &&
+        bash /code/install-vscode.sh &&
+        /startup.sh
+      "
+
+volumes:
+  vnc_home:
+  vnc_tmp:
+
+networks:
+  desktop-network:
+    driver: bridge

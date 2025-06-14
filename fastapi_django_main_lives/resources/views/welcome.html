@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .logo {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+            max-width: 800px;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #fff;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            margin: 10px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">🚀 FastAPI Laravel</div>
+        <div class="subtitle">Laravel風のPython Webフレームワーク</div>
+        
+        <div>
+            <a href="/api" class="btn">📡 API Documentation</a>
+            <a href="/api/users" class="btn">👥 Users API</a>
+            <a href="/health" class="btn">💗 Health Check</a>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🎨 Artisan Commands</h3>
+                <p>Laravel風のコマンドラインツール<br>
+                <code>./artisan make:controller UserController</code></p>
+            </div>
+            <div class="feature">
+                <h3>🏗️ MVC Architecture</h3>
+                <p>Model-View-Controller パターン<br>
+                コントローラー、モデル、サービス</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ FastAPI Powered</h3>
+                <p>高速なPython Webフレームワーク<br>
+                自動API文書生成とバリデーション</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

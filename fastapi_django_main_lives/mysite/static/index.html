@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iframe Height 100%</title>
+    <style>
+        /* HTML, body, and parent container must all have 100% height */
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* Prevents scrolling on the main page */
+        }
+        .iframe-container {
+            height: 100%;
+            width: 100%;
+            position: relative; /* Ensures the iframe is positioned correctly */
+        }
+        iframe {
+            height: 100%;
+            width: 100%;
+            border: none; /* optional, removes the iframe border */
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="iframe-container">
+        <iframe src="https://kenken999-gradio-fastapi-statics.hf.space/gradio/"></iframe>
+    </div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+openai:
+  OPENAI_API_KEY: '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'
+  OPENAI_API_BASE: 'https://api.groq.com/openai/v1'
+  OPENAI_ORGANIZATION: ''
+
+azure:
+  AZURE_OPENAI_API_KEY: ''
+  AZURE_OPENAI_ENDPOINT: ''
+  OPENAI_API_VERSION: ''
+
+google:
+  GOOGLE_API_KEY: ''

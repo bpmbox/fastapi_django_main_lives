@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- React & 関連ライブラリ -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- CSS Framework -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+        .tool-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="react-root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // メインダッシュボードコンポーネント
+        const Dashboard = () => {
+            const [user, setUser] = useState(null);
+            const [tools, setTools] = useState([]);
+            const [loading, setLoading] = useState(true);
+            const [mountedTools, setMountedTools] = useState({});
+
+            useEffect(() => {
+                // ユーザー情報取得
+                fetch('/api/auth/user')
+                    .then(res => res.json())
+                    .then(data => setUser(data))
+                    .catch(err => console.error('User fetch error:', err));
+
+                // マウント済みツール取得
+                fetch('/api/tools/mounted')
+                    .then(res => res.json())
+                    .then(data => {
+                        setMountedTools(data.mounted_tools || {});
+                        setLoading(false);
+                    })
+                    .catch(err => {
+                        console.error('Tools fetch error:', err);
+                        setLoading(false);
+                    });
+            }, []);
+
+            const toolsConfig = [
+                {
+                    id: 'chat',
+                    name: 'AI Chat',
+                    icon: 'fa-comments',
+                    description: 'AIとの対話インターフェース',
+                    url: '/tools/chat',
+                    mountUrl: '/tools/mount/chat',
+                    color: 'from-blue-400 to-blue-600'
+                },
+                {
+                    id: 'code-generator',
+                    name: 'Code Generator',
+                    icon: 'fa-code',
+                    description: 'AIによるコード生成',
+                    url: '/tools/code-generator',
+                    mountUrl: '/tools/mount/interpreter',
+                    color: 'from-green-400 to-green-600'
+                },
+                {
+                    id: 'screenshot',
+                    name: 'Screenshot Tool',
+                    icon: 'fa-camera',
+                    description: '画面キャプチャ・スクリーンショット',
+                    url: '/tools/screenshot',
+                    mountUrl: '/tools/mount/screenshot',
+                    color: 'from-purple-400 to-purple-600'
+                },
+                {
+                    id: 'admin',
+                    name: 'Admin Panel',
+                    icon: 'fa-cog',
+                    description: 'システム管理・設定',
+                    url: '/tools/admin',
+                    mountUrl: '/tools/mount/dashboard',
+                    color: 'from-red-400 to-red-600'
+                }
+            ];
+
+            const handleToolClick = async (tool) => {
+                try {
+                    // ツールがマウントされていない場合はマウント
+                    if (!mountedTools[tool.url]) {
+                        setLoading(true);
+                        const response = await fetch(tool.mountUrl);
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // マウント成功後、ツールにアクセス
+                            window.open(tool.url, '_blank');
+                            
+                            // マウント済みツールリストを更新
+                            const updatedMounted = await fetch('/api/tools/mounted');
+                            const updatedData = await updatedMounted.json();
+                            setMountedTools(updatedData.mounted_tools || {});
+                        } else {
+                            alert(`ツールのマウントに失敗しました: ${result.message}`);
+                        }
+                        setLoading(false);
+                    } else {
+                        // 既にマウント済みの場合は直接アクセス
+                        window.open(tool.url, '_blank');
+                    }
+                } catch (error) {
+                    console.error('Tool access error:', error);
+                    alert('ツールへのアクセスに失敗しました');
+                    setLoading(false);
+                }
+            };
+
+            if (loading) {
+                return (
+                    <div className="min-h-screen gradient-bg flex items-center justify-center">
+                        <div className="text-white text-2xl">
+                            <i className="fas fa-spinner fa-spin mr-3"></i>
+                            読み込み中...
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className="min-h-screen gradient-bg">
+                    {/* ヘッダー */}
+                    <header className="bg-white bg-opacity-10 backdrop-blur-md">
+                        <div className="container mx-auto px-6 py-4">
+                            <div className="flex justify-between items-center">
+                                <div className="text-white">
+                                    <h1 className="text-2xl font-bold">🚀 AI Tools Dashboard</h1>
+                                    <p className="text-sm opacity-80">{{ request.url }}</p>
+                                </div>
+                                {user && (
+                                    <div className="text-white">
+                                        <span className="mr-3">👤 {user.username}</span>
+                                        <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs">
+                                            {user.role}
+                                        </span>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* メインコンテンツ */}
+                    <main className="container mx-auto px-6 py-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {toolsConfig.map(tool => (
+                                <div 
+                                    key={tool.id}
+                                    className="tool-card card-hover cursor-pointer"
+                                    onClick={() => handleToolClick(tool)}
+                                >
+                                    <div className={`w-12 h-12 bg-gradient-to-r ${tool.color} rounded-lg flex items-center justify-center mb-4`}>
+                                        <i className={`fas ${tool.icon} text-white text-xl`}></i>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-gray-800 mb-2">{tool.name}</h3>
+                                    <p className="text-gray-600 mb-4">{tool.description}</p>
+                                    
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-sm text-gray-500">{tool.url}</span>
+                                        <div className="flex items-center">
+                                            {mountedTools[tool.url] ? (
+                                                <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
+                                                    <i className="fas fa-check mr-1"></i>Ready
+                                                </span>
+                                            ) : (
+                                                <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs">
+                                                    <i className="fas fa-download mr-1"></i>Mount
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 統計情報 */}
+                        <div className="mt-12 bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-6">
+                            <h3 className="text-white text-lg font-bold mb-4">📊 システム状況</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-white">
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold">{Object.keys(mountedTools).length}</div>
+                                    <div className="text-sm opacity-80">マウント済みツール</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold">{toolsConfig.length}</div>
+                                    <div className="text-sm opacity-80">利用可能ツール</div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-3xl font-bold">{{ api_base }}</div>
+                                    <div className="text-sm opacity-80">ベースURL</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 直接リンク */}
+                        <div className="mt-8 text-center">
+                            <a 
+                                href="/gradio" 
+                                target="_blank"
+                                className="inline-block bg-white bg-opacity-20 backdrop-blur-md text-white px-6 py-3 rounded-full hover:bg-opacity-30 transition-all duration-300"
+                            >
+                                🌐 統合Gradioインターフェース
+                            </a>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        // Reactアプリをレンダリング
+        ReactDOM.render(<Dashboard />, document.getElementById('react-root'));
+    </script>
+</body>
+</html>

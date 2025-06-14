@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+"""
+Codespace RPA キャプチャテスト
+============================
+"""
+
+import sys
+import os
+import asyncio
+from datetime import datetime
+from pathlib import Path
+import time
+
+# プロジェクトルートをパスに追加
+sys.path.append('/workspaces/fastapi_django_main_live')
+
+async def test_codespace_capture():
+    """Codespace環境でのRPAキャプチャテスト"""
+    
+    print("🚀 Codespace RPA キャプチャテスト開始")
+    print(f"⏰ 開始時刻: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    
+    # RPAモジュールの読み込み
+    try:
+        from contbk.gra_12_rpa.rpa_automation import RPAManager
+        print("✅ RPA機能利用可能")
+    except ImportError as e:
+        print(f"❌ RPA機能利用不可: {e}")
+        return
+    
+    # 保存先ディレクトリ作成
+    save_dir = Path("/workspaces/fastapi_django_main_live/docs/images/debug_captures")
+    save_dir.mkdir(parents=True, exist_ok=True)
+    print(f"📁 保存先: {save_dir}")
+    
+    # RPAマネージャー初期化
+    rpa_manager = RPAManager()
+    
+    # Codespace URL
+    target_url = "https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/"
+    print(f"🌐 対象URL: {target_url}")
+    
+    try:
+        print("📸 キャプチャ実行中...")
+        
+        # 全画面キャプチャテスト
+        img, message = await rpa_manager.capture_screenshot(
+            url=target_url,
+            selector=None,  # 全画面
+            wait_time=8  # Codespace読み込み時間を考慮
+        )
+        
+        if img:
+            # 保存
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"codespace_capture_{timestamp}.png"
+            filepath = save_dir / filename
+            img.save(filepath)
+            
+            print(f"✅ キャプチャ成功!")
+            print(f"📄 ファイル: {filepath}")
+            print(f"📏 画像サイズ: {img.size}")
+            print(f"💬 メッセージ: {message}")
+            
+            # ファイル存在確認
+            if filepath.exists():
+                size_kb = filepath.stat().st_size / 1024
+                print(f"💾 ファイルサイズ: {size_kb:.1f} KB")
+            
+            # 特定要素のキャプチャもテスト
+            print("\n🎯 セレクター指定キャプチャテスト...")
+            
+            selectors_to_test = [
+                (".gradio-container", "メインコンテナ"),
+                (".tab-nav", "タブナビゲーション"),
+                ("body", "ページ全体"),
+            ]
+            
+            for selector, description in selectors_to_test:
+                print(f"  🔍 {description}: {selector}")
+                
+                try:
+                    img_sel, msg_sel = await rpa_manager.capture_screenshot(
+                        url=target_url,
+                        selector=selector,
+                        wait_time=5
+                    )
+                    
+                    if img_sel:
+                        sel_filename = f"codespace_selector_{selector.replace('.', '').replace(' ', '_')}_{timestamp}.png"
+                        sel_filepath = save_dir / sel_filename
+                        img_sel.save(sel_filepath)
+                        print(f"    ✅ 成功: {sel_filepath.name} ({img_sel.size})")
+                    else:
+                        print(f"    ❌ 失敗: {msg_sel}")
+                        
+                except Exception as e:
+                    print(f"    ⚠️ エラー: {str(e)}")
+                
+                # 間隔を空ける
+                await asyncio.sleep(2)
+        
+        else:
+            print(f"❌ キャプチャ失敗: {message}")
+    
+    except Exception as e:
+        print(f"❌ 全体エラー: {str(e)}")
+        import traceback
+        traceback.print_exc()
+    
+    finally:
+        print(f"🏁 テスト終了: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+if __name__ == "__main__":
+    asyncio.run(test_codespace_capture())

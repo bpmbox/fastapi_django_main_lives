@@ -1,0 +1,11 @@
+LineImageGetter
+┣━ Code
+┃   ┣━ LineImageGetter.gs
+┃   ┣━ ImageSaver.gs
+┃   ┣━ SequenceDiagram.gs
+┃   ┣━ FolderTree.gs
+┃   ┗━ README.md
+┣━ resources
+┃   ┗━ sequence.puml
+┣━ LICENSE
+┗━ README.md

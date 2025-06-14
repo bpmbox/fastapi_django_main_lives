@@ -1,0 +1,415 @@
+#!/usr/bin/env python3
+"""
+シンプル統合システムランチャー
+外部依存関係を最小化したスタンドアロン版
+"""
+
+import gradio as gr
+import sqlite3
+import os
+import json
+from datetime import datetime
+from typing import List, Dict, Optional
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from config.database import get_db_path
+
+# データベース初期化
+def init_db():
+    """データベース初期化"""
+    db_path = get_db_path('prompts.db')
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # プロンプトテーブル
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS prompts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # 承認キューテーブル
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS approval_queue (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL,
+            source TEXT DEFAULT 'manual',
+            priority INTEGER DEFAULT 3,
+            status TEXT DEFAULT 'pending',
+            github_issue_url TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    ''')
+    
+    # 実行ログテーブル
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS execution_log (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            status TEXT NOT NULL,
+            result_url TEXT,
+            execution_time REAL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            details TEXT
+        )
+    ''')
+    
+    conn.commit()
+    conn.close()
+
+def get_prompts() -> List[Dict]:
+    """プロンプト一覧取得"""
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, title, content, created_at FROM prompts ORDER BY id DESC')
+    prompts = cursor.fetchall()
+    conn.close()
+    
+    return [
+        {
+            'id': p[0],
+            'title': p[1],
+            'content': p[2],
+            'created_at': p[3]
+        }
+        for p in prompts
+    ]
+
+def save_prompt(title: str, content: str) -> str:
+    """プロンプト保存"""
+    if not title or not content:
+        return "❌ タイトルと内容を入力してください"
+    
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO prompts (title, content) VALUES (?, ?)',
+        (title, content)
+    )
+    conn.commit()
+    conn.close()
+    
+    return f"✅ プロンプト '{title}' を保存しました"
+
+def get_approval_queue() -> List[Dict]:
+    """承認待ちキュー取得"""
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT id, issue_title, issue_body, requester, priority, approval_status, github_repo, created_at 
+        FROM approval_queue 
+        ORDER BY priority ASC, created_at ASC
+    ''')
+    queue = cursor.fetchall()
+    conn.close()
+    
+    return [
+        {
+            'id': q[0],
+            'title': q[1],
+            'content': q[2],
+            'source': q[3],
+            'priority': q[4],
+            'status': q[5],
+            'github_issue_url': q[6] or '',
+            'created_at': q[7]
+        }
+        for q in queue
+    ]
+
+def approve_request(request_id: int) -> str:
+    """リクエスト承認"""
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    
+    # リクエスト情報取得
+    cursor.execute('SELECT issue_title, issue_body FROM approval_queue WHERE id = ?', (request_id,))
+    request = cursor.fetchone()
+    
+    if not request:
+        conn.close()
+        return "❌ リクエストが見つかりません"
+    
+    title, content = request
+    
+    # ステータス更新
+    cursor.execute(
+        'UPDATE approval_queue SET approval_status = ? WHERE id = ?',
+        ('approved', request_id)
+    )
+    
+    # 実行ログに記録
+    cursor.execute(
+        'INSERT INTO execution_log (title, status, details) VALUES (?, ?, ?)',
+        (title, 'simulated', f'承認されたプロンプト: {content[:100]}...')
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    return f"✅ '{title}' を承認し、シミュレーション実行しました"
+
+def reject_request(request_id: int, reason: str = "") -> str:
+    """リクエスト拒否"""
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        'UPDATE approval_queue SET approval_status = ? WHERE id = ?',
+        ('rejected', request_id)
+    )
+    
+    conn.commit()
+    conn.close()
+    
+    return f"❌ リクエストを拒否しました。理由: {reason or '未指定'}"
+
+def add_to_approval_queue(title: str, content: str, source: str = "manual") -> str:
+    """承認キューに追加"""
+    if not title or not content:
+        return "❌ タイトルと内容を入力してください"
+    
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    cursor.execute(
+        'INSERT INTO approval_queue (issue_title, issue_body, requester) VALUES (?, ?, ?)',
+        (title, content, source)
+    )
+    conn.commit()
+    conn.close()
+    
+    return f"✅ '{title}' を承認キューに追加しました"
+
+def get_execution_logs() -> List[Dict]:
+    """実行ログ取得"""
+    conn = sqlite3.connect('prompts.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        SELECT id, title, status, result_url, execution_time, created_at, details 
+        FROM execution_log 
+        ORDER BY created_at DESC 
+        LIMIT 50
+    ''')
+    logs = cursor.fetchall()
+    conn.close()
+    
+    return [
+        {
+            'id': l[0],
+            'title': l[1],
+            'status': l[2],
+            'result_url': l[3] or '',
+            'execution_time': l[4] or 0,
+            'created_at': l[5],
+            'details': l[6] or ''
+        }
+        for l in logs
+    ]
+
+def create_interface():
+    """Gradioインターフェース作成"""
+    
+    init_db()
+    
+    with gr.Blocks(title="🚀 統合プロンプト管理システム", theme="soft") as interface:
+        gr.Markdown("""
+        # 🚀 統合プロンプト管理システム (シンプル版)
+        
+        **プロンプト管理 → 承認システム → 実行シミュレーション**
+        
+        このシステムは以下の機能を提供します：
+        
+        1. **📝 プロンプト管理** - システム生成用プロンプトの保存・管理
+        2. **✅ 承認システム** - プロンプト実行の承認ワークフロー
+        3. **📊 実行監視** - システム実行状況の監視
+        4. **🔗 GitHub連携準備** - 将来的なGitHub統合への準備
+        
+        ---
+        """)
+        
+        with gr.Tabs():
+            # プロンプト管理タブ
+            with gr.TabItem("📝 プロンプト管理"):
+                with gr.Row():
+                    with gr.Column():
+                        prompt_title = gr.Textbox(label="プロンプトタイトル", placeholder="例: FastAPI + Vue.js システム")
+                        prompt_content = gr.Textbox(
+                            label="プロンプト内容",
+                            lines=10,
+                            placeholder="システム生成に必要な詳細要件を記述してください..."
+                        )
+                        save_btn = gr.Button("💾 プロンプト保存", variant="primary")
+                        save_result = gr.Textbox(label="保存結果", interactive=False)
+                    
+                    with gr.Column():
+                        gr.Markdown("### 📋 保存済みプロンプト")
+                        prompts_display = gr.Dataframe(
+                            headers=["ID", "タイトル", "作成日時"],
+                            interactive=False
+                        )
+                        refresh_prompts_btn = gr.Button("🔄 更新")
+                
+                def refresh_prompts():
+                    prompts = get_prompts()
+                    return [[p['id'], p['title'], p['created_at']] for p in prompts]
+                
+                def save_prompt_wrapper(title, content):
+                    result = save_prompt(title, content)
+                    return result, "", "", refresh_prompts()
+                
+                save_btn.click(
+                    save_prompt_wrapper,
+                    inputs=[prompt_title, prompt_content],
+                    outputs=[save_result, prompt_title, prompt_content, prompts_display]
+                )
+                
+                refresh_prompts_btn.click(refresh_prompts, outputs=[prompts_display])
+                
+                # 初期表示
+                interface.load(refresh_prompts, outputs=[prompts_display])
+            
+            # 承認システムタブ
+            with gr.TabItem("✅ 承認システム"):
+                with gr.Row():
+                    with gr.Column():
+                        gr.Markdown("### 📤 新規リクエスト送信")
+                        req_title = gr.Textbox(label="リクエストタイトル")
+                        req_content = gr.Textbox(label="リクエスト内容", lines=5)
+                        submit_btn = gr.Button("📨 承認依頼送信", variant="secondary")
+                        submit_result = gr.Textbox(label="送信結果", interactive=False)
+                    
+                    with gr.Column():
+                        gr.Markdown("### ⏳ 承認待ちキュー")
+                        approval_queue = gr.Dataframe(
+                            headers=["ID", "タイトル", "ソース", "優先度", "ステータス"],
+                            interactive=False
+                        )
+                        refresh_queue_btn = gr.Button("🔄 キュー更新")
+                
+                with gr.Row():
+                    with gr.Column():
+                        gr.Markdown("### 🎯 承認アクション")
+                        action_id = gr.Number(label="対象ID", precision=0)
+                        approve_btn = gr.Button("✅ 承認", variant="primary")
+                        reject_btn = gr.Button("❌ 拒否", variant="stop")
+                        reject_reason = gr.Textbox(label="拒否理由（任意）")
+                        action_result = gr.Textbox(label="アクション結果", interactive=False)
+                
+                def refresh_queue():
+                    queue = get_approval_queue()
+                    return [[q['id'], q['title'], q['source'], q['priority'], q['status']] for q in queue if q['status'] == 'pending_review']
+                
+                def submit_request_wrapper(title, content):
+                    result = add_to_approval_queue(title, content)
+                    return result, "", "", refresh_queue()
+                
+                submit_btn.click(
+                    submit_request_wrapper,
+                    inputs=[req_title, req_content],
+                    outputs=[submit_result, req_title, req_content, approval_queue]
+                )
+                
+                approve_btn.click(
+                    lambda id_val: approve_request(int(id_val)) if id_val else "❌ IDを入力してください",
+                    inputs=[action_id],
+                    outputs=[action_result]
+                )
+                
+                reject_btn.click(
+                    lambda id_val, reason: reject_request(int(id_val), reason) if id_val else "❌ IDを入力してください",
+                    inputs=[action_id, reject_reason],
+                    outputs=[action_result]
+                )
+                
+                refresh_queue_btn.click(refresh_queue, outputs=[approval_queue])
+                interface.load(refresh_queue, outputs=[approval_queue])
+            
+            # 実行ログタブ
+            with gr.TabItem("📊 実行ログ"):
+                gr.Markdown("### 📈 システム実行履歴")
+                execution_logs = gr.Dataframe(
+                    headers=["ID", "タイトル", "ステータス", "実行時間", "作成日時"],
+                    interactive=False
+                )
+                refresh_logs_btn = gr.Button("🔄 ログ更新")
+                
+                def refresh_logs():
+                    logs = get_execution_logs()
+                    return [[l['id'], l['title'], l['status'], f"{l['execution_time']:.2f}s", l['created_at']] for l in logs]
+                
+                refresh_logs_btn.click(refresh_logs, outputs=[execution_logs])
+                interface.load(refresh_logs, outputs=[execution_logs])
+            
+            # システム情報タブ
+            with gr.TabItem("ℹ️ システム情報"):
+                gr.Markdown("""
+                ## 📋 システム概要
+                
+                この統合プロンプト管理システムは、GPT-ENGINEERによる自動システム生成のための
+                プロンプト管理と承認ワークフローを提供します。
+                
+                ### 🔧 主要機能
+                
+                1. **プロンプト管理**
+                   - システム生成用プロンプトの保存・編集
+                   - プロンプトテンプレートの管理
+                   
+                2. **承認システム**
+                   - プロンプト実行の承認ワークフロー
+                   - 優先度ベースのキュー管理
+                   
+                3. **実行監視**
+                   - システム生成の実行状況監視
+                   - 実行ログの保管・表示
+                
+                ### 🚀 今後の展開
+                
+                - GitHub ISSUE連携の実装
+                - GPT-ENGINEER統合の完全自動化
+                - Controller自動認識・統合
+                - Google Chat通知システム
+                
+                ### 📊 現在の状況
+                
+                - ✅ SQLiteデータベース構築済み
+                - ✅ 基本的なプロンプト管理機能
+                - ✅ 承認ワークフローシステム
+                - 🔄 GitHub連携準備中
+                - 🔄 GPT-ENGINEER統合準備中
+                
+                ---
+                **開発者:** GitHub Copilot AI Assistant  
+                **最終更新:** 2025年6月11日
+                """)
+        
+        return interface
+
+if __name__ == "__main__":
+    # ポート確認
+    import socket
+    
+    def is_port_available(port):
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            return s.connect_ex(('localhost', port)) != 0
+    
+    # 利用可能なポートを見つける
+    port = 7860
+    while not is_port_available(port) and port < 7870:
+        port += 1
+    
+    print(f"🚀 統合プロンプト管理システムを起動中...")
+    print(f"🌐 ポート: {port}")
+    print(f"🔗 URL: http://localhost:{port}")
+    
+    interface = create_interface()
+    interface.launch(
+        share=True,
+        server_name="0.0.0.0",
+        server_port=port,
+        show_error=True
+    )

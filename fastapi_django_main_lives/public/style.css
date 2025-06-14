@@ -1,0 +1,11 @@
+/* Public CSS - Laravel風のスタイル */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.laravel-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}

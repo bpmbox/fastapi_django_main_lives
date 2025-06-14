@@ -1,0 +1,28 @@
+@startuml
+participant "User" as user
+participant "Frontend" as frontend
+participant "API" as api
+participant "Database" as database
+
+user -> frontend: Register
+frontend -> api: Register user
+api -> database: Create user
+database -> api: User created
+api -> frontend: User created
+frontend -> user: User created
+
+user -> frontend: Login
+frontend -> api: Login user
+api -> database: Authenticate user
+database -> api: User authenticated
+api -> frontend: User authenticated
+frontend -> user: User authenticated
+
+user -> frontend: View profile
+frontend -> api: Get user profile
+api -> database: Get user profile
+database -> api: User profile
+api -> frontend: User profile
+frontend -> user: User profile
+
+@enduml

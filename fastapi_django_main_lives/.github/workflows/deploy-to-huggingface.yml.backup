@@ -1,0 +1,293 @@
+name: Deploy to Hugging Face Spaces
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:  # 手動実行も可能
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # 全履歴を取得
+        lfs: true  # Git LFS サポート
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install huggingface_hub
+        
+    - name: Configure Git for Hugging Face
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+    
+    - name: Setup Hugging Face Token
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        # Hugging Face Hubにログイン
+        python -c "
+        from huggingface_hub import login
+        import os
+        token = os.environ.get('HF_TOKEN')
+        if token:
+            login(token=token)
+            print('✅ Hugging Face login successful')
+        else:
+            print('❌ HF_TOKEN not found in secrets')
+            exit(1)
+        "
+    
+    - name: Clone Hugging Face Space
+      env:
+        HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      run: |
+        # Hugging Face Spaceをクローン
+        git clone https://huggingface.co/spaces/kenken999/fastapi_django_main_live hf_space
+        cd hf_space
+        
+        # 認証情報を設定
+        git remote set-url origin https://oauth2:$HF_TOKEN@huggingface.co/spaces/kenken999/fastapi_django_main_live
+    
+    - name: Copy files and update Space
+      run: |
+        # 変更されたファイルをコピー
+        echo "📂 Copying updated files..."
+        
+        # メインアプリケーションファイルをコピー
+        if [ -f "app.py" ]; then
+          cp app.py hf_space/
+          echo "✅ Copied app.py"
+        fi
+        
+        # requirements.txt をコピー
+        if [ -f "requirements.txt" ]; then
+          cp requirements.txt hf_space/
+          echo "✅ Copied requirements.txt"
+        fi
+        
+        # Dockerfile をコピー
+        if [ -f "Dockerfile" ]; then
+          cp Dockerfile hf_space/
+          echo "✅ Copied Dockerfile"
+        fi
+        
+        # .env.example をコピー（環境変数テンプレート）
+        if [ -f ".env.example" ]; then
+          cp .env.example hf_space/
+          echo "✅ Copied .env.example"
+        fi
+        
+        # 必要なディレクトリをコピー
+        echo "📁 Copying project directories..."
+        
+        # controllers ディレクトリ（Gradioインターフェース）
+        if [ -d "controllers" ]; then
+          cp -r controllers hf_space/
+          echo "✅ Copied controllers/ directory"
+        fi
+        
+        # mysite ディレクトリ（Djangoコア）
+        if [ -d "mysite" ]; then
+          cp -r mysite hf_space/
+          echo "✅ Copied mysite/ directory"
+        fi
+        
+        # templates ディレクトリ
+        if [ -d "templates" ]; then
+          cp -r templates hf_space/
+          echo "✅ Copied templates/ directory"
+        fi
+        
+        # static ディレクトリ
+        if [ -d "static" ]; then
+          cp -r static hf_space/
+          echo "✅ Copied static/ directory"
+        fi
+        
+        # README.md を更新
+        echo "📝 Updating README.md with deployment info..."
+        cat > hf_space/README.md << 'EOF'
+        ---
+        title: FastAPI Django Main Live
+        emoji: 🚀
+        colorFrom: blue
+        colorTo: purple
+        sdk: docker
+        pinned: false
+        license: mit
+        app_port: 7860
+        ---
+
+        # FastAPI Django Main Live - Hugging Face Spaces
+
+        🚀 **AI-Driven Auto-Generation System with Gradio Interfaces**
+
+        ## 🌟 特徴
+
+        - ✅ **GitHub Actions自動デプロイ**
+        - 🤖 **AI駆動の自動インターフェース生成**
+        - 📊 **マルチモーダル機能（画像→UI生成）**
+        - ⚡ **8-9個のGradioインターフェース自動統合**
+        - 🎨 **動的UI生成システム**
+        - 🌐 **Hugging Face Spaces完全対応**
+
+        ## 🚀 アクセス
+
+        メインアプリケーションにアクセスして、自動検出されたインターフェースを利用してください：
+
+        - `/` - メインダッシュボード
+        - `/gradio` - 統合Gradioインターフェース
+        - Auto-detected interfaces from controllers/
+
+        ## 🔄 自動デプロイ
+
+        このスペースはGitHub Actionsで自動更新されます：
+        - `main`ブランチへのプッシュで自動デプロイ
+        - 手動実行も可能
+        - AI駆動システムの最新版を常に反映
+
+        ## 📡 最終更新
+
+        Last deployed: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        EOF
+    
+    - name: Create or update app.py for Hugging Face Spaces
+      run: |
+        # 既存のapp.pyをそのまま使用（必要に応じてHugging Face用に調整）
+        echo "✅ Using existing app.py for Hugging Face Spaces"
+        
+        # 環境変数テンプレートファイルを作成
+        cat > hf_space/.env.example << 'EOF'
+        # Hugging Face Spaces Environment Variables Template
+        # Copy this to .env and fill in your actual values
+        
+        # API Keys
+        GROQ_API_KEY=your_groq_api_key_here
+        HF_TOKEN=your_huggingface_token_here
+        
+        # Gradio Configuration
+        GRADIO_THEME=huggingface
+        GRADIO_SERVER_NAME=0.0.0.0
+        GRADIO_NUM_PORTS=1
+        
+        # System Configuration
+        PYTHONUNBUFFERED=1
+        EOF
+    
+    - name: Update requirements.txt for Hugging Face Spaces
+      run: |
+        # 既存のrequirements.txtをベースに、Hugging Face Spaces用に調整
+        if [ -f "requirements.txt" ]; then
+          echo "✅ Using existing requirements.txt"
+        else
+          # フォールバック用のrequirements.txtを作成
+          cat > hf_space/requirements.txt << 'EOF'
+        fastapi==0.109.2
+        uvicorn[standard]==0.24.0
+        gradio>=3.0.0
+        python-dotenv>=0.19.0
+        python-multipart>=0.0.6
+        jinja2>=3.1.2
+        groq>=0.4.0
+        Pillow>=9.0.0
+        aiofiles>=0.8.0
+        EOF
+          echo "✅ Created fallback requirements.txt for Hugging Face Spaces"
+        fi
+    
+    - name: Create Dockerfile for Hugging Face Spaces
+      run: |
+        # 既存のDockerfileをベースに使用
+        if [ -f "Dockerfile" ]; then
+          echo "✅ Using existing Dockerfile"
+          # Hugging Face Spaces用にポート調整が必要な場合のみ修正
+          if ! grep -q "EXPOSE 7860" hf_space/Dockerfile; then
+            echo "📝 Adjusting Dockerfile for Hugging Face Spaces port..."
+            sed -i 's/EXPOSE [0-9]*/EXPOSE 7860/' hf_space/Dockerfile 2>/dev/null || true
+          fi
+        else
+          # フォールバック用のDockerfileを作成
+          cat > hf_space/Dockerfile << 'EOF'
+        FROM python:3.11-slim
+
+        WORKDIR /code
+
+        # システムの依存関係をインストール
+        RUN apt-get update && apt-get install -y \
+            gcc \
+            && rm -rf /var/lib/apt/lists/*
+
+        # Pythonの依存関係をコピーしてインストール
+        COPY ./requirements.txt /code/requirements.txt
+        RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
+
+        # アプリケーションコードをコピー
+        COPY . /code/
+
+        # ポート7860を公開（Hugging Face Spaces標準）
+        EXPOSE 7860
+
+        # アプリケーションを起動
+        CMD ["python", "app.py"]
+        EOF
+          echo "✅ Created fallback Dockerfile for Hugging Face Spaces"
+        fi
+    
+    - name: Deploy to Hugging Face Spaces
+      run: |
+        cd hf_space
+        
+        # 変更があるかチェック
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "📤 Changes detected, deploying to Hugging Face Spaces..."
+          
+          # 変更をコミット
+          git add .
+          git commit -m "🚀 Auto-deploy from GitHub Actions $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+
+          ✅ Features updated:
+          - FastAPI Django Main Live (Latest)
+          - AI-driven auto-generation system
+          - Multiple Gradio interfaces auto-detection
+          - Multimodal image-to-UI generation
+          - Enhanced dynamic UI generation
+          
+          🤖 Deployed via GitHub Actions"
+          
+          # Hugging Face Spacesにプッシュ
+          git push origin main
+          
+          echo "✅ Successfully deployed to Hugging Face Spaces!"
+          echo "🌐 Check your space at: https://huggingface.co/spaces/kenken999/fastapi_django_main_live"
+        else
+          echo "ℹ️  No changes detected, skipping deployment"
+        fi
+    
+    - name: Deployment Summary
+      run: |
+        echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+        echo "- **Status**: ✅ Success" >> $GITHUB_STEP_SUMMARY
+        echo "- **Target**: Hugging Face Spaces" >> $GITHUB_STEP_SUMMARY
+        echo "- **Space URL**: https://huggingface.co/spaces/kenken999/fastapi_django_main_live" >> $GITHUB_STEP_SUMMARY
+        echo "- **Timestamp**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "- **Features**: FastAPI Django Main Live with AI-driven interfaces" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📊 AI-Driven System Features" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Auto-detection of Gradio interfaces" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Multimodal image-to-UI generation" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Dynamic React/Vue.js code generation" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Weather forecast AI integration" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Frontend generator with smart analysis" >> $GITHUB_STEP_SUMMARY

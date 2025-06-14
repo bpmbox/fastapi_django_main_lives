@@ -1,0 +1,68 @@
+{
+  "screenshots": {
+    "main_dashboard": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/main_dashboard_20250613_142019.png",
+      "description": "メインダッシュボード",
+      "timestamp": "2025-06-13T14:20:20.796418"
+    },
+    "gradio_interface": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_interface_20250613_142019.png",
+      "description": "Gradioインターフェース",
+      "timestamp": "2025-06-13T14:20:21.796720"
+    },
+    "gradio_startup_guide": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_startup_guide_20250613_142019.png",
+      "description": "Gradio startup_guide インターフェース",
+      "timestamp": "2025-06-13T14:20:21.796823"
+    },
+    "gradio_chat_conversation": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_chat_conversation_20250613_142019.png",
+      "description": "Gradio chat_conversation インターフェース",
+      "timestamp": "2025-06-13T14:20:21.796863"
+    },
+    "gradio_ai_automation": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_ai_automation_20250613_142019.png",
+      "description": "Gradio ai_automation インターフェース",
+      "timestamp": "2025-06-13T14:20:21.796902"
+    },
+    "gradio_prompt_document": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_prompt_document_20250613_142019.png",
+      "description": "Gradio prompt_document インターフェース",
+      "timestamp": "2025-06-13T14:20:21.797216"
+    },
+    "gradio_management_dashboard": {
+      "success": true,
+      "file_path": "/workspaces/fastapi_django_main_live/docs/images/screenshots/gradio_management_dashboard_20250613_142019.png",
+      "description": "Gradio management_dashboard インターフェース",
+      "timestamp": "2025-06-13T14:20:21.797289"
+    }
+  },
+  "api_tests": {
+    "create_prompt": {
+      "success": true,
+      "description": "プロンプト作成テスト",
+      "timestamp": "2025-06-13T14:20:24.272152"
+    },
+    "save_prompt": {
+      "success": true,
+      "description": "プロンプト保存テスト",
+      "timestamp": "2025-06-13T14:20:24.772361"
+    },
+    "load_prompt": {
+      "success": true,
+      "description": "プロンプト読み込みテスト",
+      "timestamp": "2025-06-13T14:20:25.273302"
+    },
+    "generate_response": {
+      "success": true,
+      "description": "レスポンス生成テスト",
+      "timestamp": "2025-06-13T14:20:25.773494"
+    }
+  }
+}

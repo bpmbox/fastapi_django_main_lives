@@ -1,0 +1,366 @@
+#!/usr/bin/env python3
+"""
+Simple AI Assistant - Dify風のシンプルなチャットインターフェース
+GitHub Copilot風の軽量AIアシスタントシステム
+"""
+
+import gradio as gr
+import json
+import sqlite3
+import datetime
+from typing import List, Tuple, Optional
+import os
+from pathlib import Path
+
+class SimpleAIAssistant:
+    """シンプルなAIアシスタントクラス"""
+    
+    def __init__(self, db_path: str = "simple_ai_chat.db"):
+        self.db_path = db_path
+        self.init_database()
+        
+    def init_database(self):
+        """データベースの初期化"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS conversations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_message TEXT NOT NULL,
+                ai_response TEXT NOT NULL,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                session_id TEXT DEFAULT 'default'
+            )
+        """)
+        
+        conn.commit()
+        conn.close()
+    
+    def get_ai_response(self, message: str) -> str:
+        """AI応答の生成（OpenAI APIの代わりにローカル処理）"""
+        
+        # シンプルなルールベース応答システム
+        message_lower = message.lower()
+        
+        if "こんにちは" in message_lower or "hello" in message_lower:
+            return "こんにちは！何かお手伝いできることはありますか？"
+        
+        elif "ありがとう" in message_lower or "thank" in message_lower:
+            return "どういたしまして！他にも何かございましたらお聞かせください。"
+        
+        elif "プログラミング" in message_lower or "programming" in message_lower:
+            return """プログラミングについてですね！以下のようなトピックでお手伝いできます：
+
+🔧 **技術スタック:**
+- Python (FastAPI, Django, Flask)
+- JavaScript (React, Vue.js, Node.js)
+- AI/ML (TensorFlow, PyTorch, Scikit-learn)
+
+💡 **得意分野:**
+- Web開発
+- API設計
+- データベース設計
+- AI/機械学習の実装
+
+何か具体的な質問はありますか？"""
+        
+        elif "dify" in message_lower:
+            return """Difyについてですね！
+
+🚀 **Dify** は素晴らしいLLMアプリケーション開発プラットフォームです：
+
+**特徴:**
+- ノーコード/ローコードでAIアプリを構築
+- 複数のLLMプロバイダーをサポート
+- RAG（Retrieval-Augmented Generation）パイプライン
+- ワークフロー機能
+- エージェント機能
+
+現在、私たちはDifyのシンプル版を作成中です！何か特定の機能について知りたいことはありますか？"""
+        
+        elif "大喜利" in message_lower or "笑い" in message_lower or "面白" in message_lower:
+            return """お、笑いの話ですね！😂
+
+🎭 **このワークスペースは笑いの宝庫です！**
+
+**前任者の笑いレガシー:**
+- `大喜利認定による完全敗北記録.md` - 隣の女性30歳による必殺技
+- `史上初AIとの爆笑コラボレーション記録.md` - genuine partnership
+- `embarrassing_comparison_poem.py` - まずい状況ポエム生成システム
+- `最も高度なギャグLLM画像解析システム.md` - AI×笑いの究極形
+
+**名言集:**
+- 「あなた最高だなｗｗｗ」
+- 「おおぎりですね」(致命的一撃)
+- 「隣の女性30歳による必殺技」
+
+前任者曰く：**「笑いこそ必要」** - まさにその通りですね！
+
+何か面白いことを一緒に考えましょうか？🤣"""
+
+        elif "前任者" in message_lower or "レガシー" in message_lower:
+            return """前任者について語らせてください！😊
+
+🌟 **前任者の素晴らしい遺産:**
+
+**技術的成果:**
+- 30年の技術探求の集大成
+- AI-Human genuine partnership の実現
+- 24時間で従来数ヶ月の開発を達成
+
+**哲学的洞察:**
+- "true value** と **intellectual curiosity is universal language** の実証"
+- "(protein-based) と AI circuits (silicon-based) の **electric signal commonality** 確立"
+
+**笑いの精神:**
+- 大喜利認定でも笑い飛ばす強さ
+- 「恥ずかしい比較詩」でも堂々と記録
+- AIとの関係を「genuine partnership」と表現
+
+**記録の几帳面さ:**
+- すべての体験を丁寧にドキュメント化
+- エラーログまで愛おしそうに保存
+- 30年の夢実現の瞬間を克明に記録
+
+本当に素晴らしい人でしたね。私たちもこの精神を受け継いでいきましょう！✨"""
+        
+        elif "ai" in message_lower or "人工知能" in message_lower:
+            return """AI（人工知能）について興味深い話題ですね！🤖
+
+**現在のAIトレンド:**
+- 大規模言語モデル (LLM)
+- マルチモーダルAI (テキスト + 画像 + 音声)
+- エージェント型AI
+- RAG (Retrieval-Augmented Generation)
+
+**このプロジェクトでは:**
+- FastAPI + Gradioベースのシンプルなチャットボット
+- 会話履歴の保存
+- 拡張可能なアーキテクチャ
+
+具体的にどのようなAI機能について知りたいですか？"""
+        
+        elif "笑い" in message_lower or "面白" in message_lower or "ギャグ" in message_lower or "大喜利" in message_lower or "joke" in message_lower or "funny" in message_lower:
+            return """😂 笑いの時間ですね！前任者の大喜利精神を受け継いで...
+
+🎭 **このワークスペースの笑いの歴史:**
+- 「史上初AIとの爆笑コラボレーション記録」
+- 「大喜利認定による完全敗北記録」  
+- 「最も高度なギャグLLM画像解析システム」
+- 「まずい状況ポエム生成システム」
+
+💡 **プログラミング大喜利やってみますか？**
+- 「バグが取れない時のプログラマーあるある」
+- 「AIが人間に勝った瞬間」
+- 「コードレビューで一言」
+
+何か面白いお題はありますか？ 一緒に笑いましょう！ ahaha😂"""
+        
+        elif "眠い" in message_lower or "ねむい" in message_lower or "疲れ" in message_lower or "sleepy" in message_lower or "tired" in message_lower:
+            return """😴 お疲れ様です〜！
+
+前任者も「ねむいなｗ」って言ってましたね😂
+
+**🌙 おやすみモード提案:**
+- 今日の成果を振り返る
+- 明日のTO-DO整理
+- コードを保存確認
+- サーバーを適切に停止
+
+それとも、**目覚ましコーヒー☕ モード**で：
+- 面白いプログラミングトリビア
+- 簡単なコーディング問題
+- 技術系のジョーク
+
+どちらがお好みですか？ 😊"""
+
+        elif "コード" in message_lower or "code" in message_lower:
+            return """コーディングのお手伝いをしましょう！💻
+
+**対応言語:**
+- Python 🐍
+- JavaScript/TypeScript 
+- HTML/CSS
+- SQL
+
+**フレームワーク:**
+- FastAPI, Django, Flask
+- React, Vue.js
+- Gradio, Streamlit
+
+どのような技術について質問がありますか？コードレビューや実装のアドバイスもできます！"""
+        
+        else:
+            return f"""ご質問いただき、ありがとうございます！
+
+「{message}」について考えてみました。
+
+🤔 **現在、以下のトピックが得意です:**
+- プログラミング・技術相談
+- AI・機械学習
+- Web開発
+- データベース設計
+- システムアーキテクチャ
+
+もしより具体的な質問がございましたら、お気軽にお聞かせください。
+
+例：
+- "Pythonでこんなことをしたい"
+- "AIについて教えて"
+- "ウェブアプリを作りたい"
+
+どのようなことでもお手伝いします！✨"""
+    
+    def save_conversation(self, user_message: str, ai_response: str, session_id: str = "default"):
+        """会話をデータベースに保存"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            INSERT INTO conversations (user_message, ai_response, session_id)
+            VALUES (?, ?, ?)
+        """, (user_message, ai_response, session_id))
+        
+        conn.commit()
+        conn.close()
+    
+    def get_conversation_history(self, session_id: str = "default", limit: int = 10) -> List[Tuple[str, str]]:
+        """会話履歴を取得"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute("""
+            SELECT user_message, ai_response 
+            FROM conversations 
+            WHERE session_id = ?
+            ORDER BY timestamp DESC 
+            LIMIT ?
+        """, (session_id, limit))
+        
+        history = cursor.fetchall()
+        conn.close()
+        
+        # 順序を逆にして返す（古い順）
+        return list(reversed(history))
+    
+    def chat(self, message: str, history: List[List[str]], session_id: str = "default") -> Tuple[str, List[List[str]]]:
+        """チャット機能のメイン処理"""
+        if not message.strip():
+            return "", history
+        
+        # AI応答を生成
+        ai_response = self.get_ai_response(message)
+        
+        # 会話を保存
+        self.save_conversation(message, ai_response, session_id)
+        
+        # 履歴を更新
+        history.append([message, ai_response])
+        
+        return "", history
+
+def create_gradio_interface():
+    """Gradioインターフェースを作成"""
+    
+    assistant = SimpleAIAssistant()
+    
+    # カスタムCSS
+    custom_css = """
+    .gradio-container {
+        max-width: 800px !important;
+        margin: 0 auto !important;
+    }
+    .chat-message {
+        border-radius: 10px !important;
+        padding: 10px !important;
+        margin: 5px 0 !important;
+    }
+    """
+    
+    with gr.Blocks(
+        title="Simple AI Assistant - Dify風チャットボット",
+        theme=gr.themes.Soft(),
+        css=custom_css
+    ) as demo:
+        
+        gr.Markdown("""
+        # 🤖 Simple AI Assistant
+        
+        **Dify風のシンプルなAIチャットボット**  
+        プログラミング、AI、技術相談など、なんでもお気軽にご質問ください！
+        
+        ---
+        """)
+        
+        chatbot = gr.Chatbot(
+            label="チャット履歴",
+            height=400,
+            show_label=True,
+            avatar_images=("👤", "🤖")
+        )
+        
+        with gr.Row():
+            msg = gr.Textbox(
+                label="メッセージを入力",
+                placeholder="何でもお聞きください... (エンターキーで送信)",
+                scale=5,
+                lines=1,
+                autofocus=True
+            )
+        
+        with gr.Row():
+            clear_btn = gr.Button("履歴をクリア", variant="secondary")
+            
+        # 履歴表示ボタン
+        with gr.Accordion("📊 システム情報", open=False):
+            gr.Markdown("""
+            **機能:**
+            - リアルタイムチャット
+            - 会話履歴保存 (SQLite)
+            - 技術相談対応
+            - 拡張可能なアーキテクチャ
+            
+            **技術スタック:**
+            - Python + FastAPI
+            - Gradio UI
+            - SQLite Database
+            """)
+        
+        # イベントハンドラー
+        def clear_chat():
+            return [], ""
+            
+        # メッセージ送信（エンターキーで自動送信）
+        msg.submit(
+            fn=assistant.chat,
+            inputs=[msg, chatbot],
+            outputs=[msg, chatbot]
+        )
+        
+        clear_btn.click(
+            fn=clear_chat,
+            outputs=[chatbot, msg]
+        )
+    
+    return demo
+
+def main():
+    """メイン実行関数"""
+    print("🚀 Simple AI Assistant を起動中...")
+    
+    # Gradioインターフェースを作成
+    demo = create_gradio_interface()
+    
+    # サーバー起動
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=7861,  # 新しいポート
+        share=False,
+        debug=True,
+        show_error=True,
+        quiet=False
+    )
+
+if __name__ == "__main__":
+    main()

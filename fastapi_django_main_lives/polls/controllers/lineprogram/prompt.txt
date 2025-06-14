@@ -1,0 +1,5 @@
+seleniumで
+
+kinkaimasu.jpのサイト情報を取得して
+
+金の情報を抜き出し、CSVに登録

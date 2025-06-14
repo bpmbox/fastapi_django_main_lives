@@ -1,0 +1,8 @@
+cache_dir: null
+lang: en
+last_model: Aya-23-8B-Chat
+path_dict:
+  Aya-23-8B-Chat: CohereForAI/aya-23-8B
+  Falcon-180B: tiiuae/falcon-180b
+  LLaMA3-70B-Chat: meta-llama/Meta-Llama-3-70B-Instruct
+  LLaMA3-8B-Chat: meta-llama/Meta-Llama-3-8B-Instruct

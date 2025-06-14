@@ -1,0 +1,4 @@
+django app create
+商品データに登録サンプル
+python manage.py startapp polls
+admin register

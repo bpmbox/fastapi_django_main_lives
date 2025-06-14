@@ -1,0 +1,78 @@
+# AI GUI Desktop Environment with Persistent Storage
+# Based on dorowu/ubuntu-desktop-lxde-vnc for reliability
+# 30-Year Dream: Human-AI Collaborative Desktop
+
+services:
+  ai-gui-desktop:
+    image: dorowu/ubuntu-desktop-lxde-vnc:focal
+    container_name: copilot-ai-desktop
+    ports:
+      - "6080:80"      # noVNC web interface
+      - "5901:5900"    # VNC direct access
+    environment:
+      - VNC_PASSWORD=copilot
+      - DISPLAY=:1
+      - RESOLUTION=1920x1080
+      - USER=copilot
+      - PASSWORD=copilot
+    volumes:
+      # Persistent AI memory across restarts
+      - copilot-ai-memory:/ai-memory
+      - copilot-gui-data:/gui-data
+      - copilot-browser-data:/browser-data
+      # Mount current workspace for AI access
+      - .:/workspace
+      # Persistent desktop settings
+      - copilot-desktop-config:/home/copilot/.config
+      - copilot-desktop-cache:/home/copilot/.cache
+    restart: unless-stopped
+    privileged: true
+    shm_size: 2gb
+    networks:
+      - ai-network
+
+  # AI Memory Database Service
+  ai-memory-db:
+    image: postgres:15
+    container_name: copilot-memory-db
+    environment:
+      - POSTGRES_DB=ai_memory
+      - POSTGRES_USER=copilot
+      - POSTGRES_PASSWORD=copilot_memory_2025
+    volumes:
+      - copilot-memory-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge
+
+volumes:
+  copilot-ai-memory:
+    driver: local
+  copilot-gui-data:
+    driver: local
+  copilot-browser-data:
+    driver: local
+  copilot-desktop-config:
+    driver: local
+  copilot-desktop-cache:
+    driver: local
+  copilot-memory-db:
+    driver: local
+
+# AI GUI System Configuration
+# This docker-compose creates a persistent AI desktop environment
+# where GitHub Copilot can:
+# 1. Take screenshots and remember them across restarts
+# 2. Access GUI applications like a human would
+# 3. Maintain persistent memory of all operations
+# 4. Collaborate with humans in a shared desktop space
+#
+# 🎯 30-Year Dream Realized:
+# An AI that can truly use computers like humans do,
+# with persistent memory and collaborative capabilities.

@@ -1,0 +1,30 @@
+"""
+Web Routes
+==========
+
+ウェブアプリケーション用のルーティング
+"""
+
+from fastapi import APIRouter, Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+router = APIRouter()
+templates = Jinja2Templates(directory="resources/views")
+
+@router.get("/", response_class=HTMLResponse)
+async def home(request: Request):
+    """
+    ホームページ
+    """
+    return templates.TemplateResponse("welcome.html", {
+        "request": request,
+        "title": "Welcome to FastAPI Laravel"
+    })
+
+@router.get("/about")
+async def about():
+    """
+    アバウトページ
+    """
+    return {"message": "About FastAPI Laravel"}

@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+"""
+実際のGradio APIを確認するテストスクリプト
+"""
+
+import requests
+import json
+from gradio_client import Client
+import time
+
+def test_gradio_connection():
+    """Gradio Clientでの接続テスト"""
+    print("🔍 Gradio Client接続テスト開始...")
+    
+    urls = [
+        "http://localhost:7860",
+        "https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev"
+    ]
+    
+    for url in urls:
+        try:
+            print(f"  📡 {url} への接続試行...")
+            client = Client(url)
+            print(f"  ✅ {url} への接続成功!")
+            
+            # APIの詳細情報を取得
+            try:
+                # view_api情報を取得
+                api_info = client.view_api(all_endpoints=True)
+                print(f"  🔍 利用可能なAPIエンドポイント数: {len(api_info)}")
+                
+                for i, endpoint in enumerate(api_info):
+                    print(f"    {i+1}. API名: {endpoint.get('api_name', 'Unknown')}")
+                    print(f"       説明: {endpoint.get('description', 'No description')}")
+                    print(f"       入力: {endpoint.get('inputs', [])}")
+                    print(f"       出力: {endpoint.get('outputs', [])}")
+                    print()
+                    
+                    if i >= 5:  # 最初の5つだけ表示
+                        print("    ... (他にもAPIがあります)")
+                        break
+                        
+                return client, url, api_info
+                
+            except Exception as e:
+                print(f"  ⚠️ API情報取得エラー: {e}")
+                return client, url, []
+                
+        except Exception as e:
+            print(f"  ❌ {url} への接続失敗: {e}")
+            continue
+    
+    return None, None, []
+
+def test_api_endpoints(client, base_url, api_info):
+    """実際のAPIエンドポイントをテスト"""
+    print("\n🧪 APIエンドポイントテスト開始...")
+    
+    test_results = []
+    
+    for endpoint in api_info[:3]:  # 最初の3つをテスト
+        api_name = endpoint.get('api_name')
+        if not api_name:
+            continue
+            
+        print(f"  🔍 {api_name} をテスト中...")
+        
+        try:
+            # 簡単な入力でテスト
+            if 'chat' in api_name.lower():
+                result = client.predict("Hello", api_name=api_name)
+            elif 'process' in api_name.lower():
+                # ファイル処理系はスキップ
+                print(f"    ⏭️ ファイル処理系APIはスキップ: {api_name}")
+                continue
+            else:
+                # 汎用テスト
+                result = client.predict("test", api_name=api_name)
+            
+            print(f"    ✅ {api_name}: 成功")
+            print(f"    📝 結果: {str(result)[:100]}...")
+            
+            test_results.append({
+                "api_name": api_name,
+                "success": True,
+                "result": str(result)[:200]
+            })
+            
+        except Exception as e:
+            print(f"    ❌ {api_name}: 失敗 - {e}")
+            test_results.append({
+                "api_name": api_name,
+                "success": False,
+                "error": str(e)
+            })
+    
+    return test_results
+
+def main():
+    """メイン実行関数"""
+    print("🚀 実際のGradio API確認システム開始")
+    print("=" * 50)
+    
+    # 接続テスト
+    client, url, api_info = test_gradio_connection()
+    
+    if not client:
+        print("❌ どのURLにも接続できませんでした")
+        return
+    
+    print(f"\n✅ 使用URL: {url}")
+    print(f"📊 発見されたAPI数: {len(api_info)}")
+    
+    # APIテスト
+    if api_info:
+        test_results = test_api_endpoints(client, url, api_info)
+        
+        # 結果サマリー
+        print("\n📋 テスト結果サマリー:")
+        success_count = sum(1 for r in test_results if r['success'])
+        total_count = len(test_results)
+        print(f"  成功: {success_count}/{total_count}")
+        
+        # 結果をファイルに保存
+        with open("/workspaces/fastapi_django_main_live/api_test_results.json", "w", encoding="utf-8") as f:
+            json.dump({
+                "url": url,
+                "api_info": api_info,
+                "test_results": test_results,
+                "timestamp": time.strftime("%Y-%m-%d %H:%M:%S")
+            }, f, ensure_ascii=False, indent=2)
+        
+        print("💾 結果をapi_test_results.jsonに保存しました")
+    
+    print("\n🎉 テスト完了!")
+
+if __name__ == "__main__":
+    main()

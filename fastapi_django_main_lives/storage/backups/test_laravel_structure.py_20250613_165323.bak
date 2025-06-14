@@ -1,0 +1,334 @@
+#!/usr/bin/env python3
+"""
+🧪 Laravel風 自動テストシステム
+===============================
+
+プロジェクト構造とコードの自動テスト・修正システム
+"""
+
+import os
+import sys
+import pytest
+import subprocess
+from pathlib import Path
+from typing import Dict, List, Any, Optional
+import importlib.util
+import json
+from datetime import datetime
+
+class LaravelStructureValidator:
+    """Laravel風構造の検証クラス"""
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        self.required_dirs = [
+            "app",
+            "app/Http", 
+            "app/Http/Controllers",
+            "app/Http/Middleware",
+            "app/Models",
+            "app/Services",
+            "app/Console",
+            "app/Console/Commands",
+            "bootstrap",
+            "config", 
+            "database",
+            "database/migrations",
+            "database/seeders",
+            "public",
+            "resources",
+            "resources/views",
+            "routes",
+            "storage",
+            "storage/app",
+            "storage/logs",
+            "tests",
+            "tests/Feature",
+            "tests/Unit"
+        ]
+        
+        self.required_files = [
+            "artisan",
+            "main.py",
+            ".env.example",
+            "requirements.txt"
+        ]
+    
+    def validate_structure(self) -> Dict[str, Any]:
+        """プロジェクト構造を検証"""
+        results = {
+            "missing_dirs": [],
+            "missing_files": [],
+            "existing_dirs": [],
+            "existing_files": [],
+            "errors": []
+        }
+        
+        # ディレクトリチェック
+        for dir_path in self.required_dirs:
+            full_path = self.project_root / dir_path
+            if full_path.exists():
+                results["existing_dirs"].append(dir_path)
+            else:
+                results["missing_dirs"].append(dir_path)
+        
+        # ファイルチェック
+        for file_path in self.required_files:
+            full_path = self.project_root / file_path
+            if full_path.exists():
+                results["existing_files"].append(file_path)
+            else:
+                results["missing_files"].append(file_path)
+        
+        return results
+    
+    def fix_structure(self, validation_results: Dict[str, Any]) -> bool:
+        """構造の問題を自動修正"""
+        try:
+            # 不足ディレクトリを作成
+            for dir_path in validation_results["missing_dirs"]:
+                full_path = self.project_root / dir_path
+                full_path.mkdir(parents=True, exist_ok=True)
+                print(f"✅ Created directory: {dir_path}")
+            
+            # 不足ファイルを作成（基本版）
+            for file_path in validation_results["missing_files"]:
+                if file_path == ".env.example":
+                    self._create_env_example()
+                elif file_path == "requirements.txt":
+                    self._create_requirements_txt()
+                
+            return True
+        except Exception as e:
+            print(f"❌ Error fixing structure: {e}")
+            return False
+    
+    def _create_env_example(self):
+        """環境変数サンプルファイルを作成"""
+        content = '''# Application
+APP_NAME="FastAPI Laravel"
+APP_ENV=development
+APP_DEBUG=true
+APP_URL=http://localhost:8000
+
+# Database
+DB_CONNECTION=sqlite
+DB_DATABASE=storage/app/database.sqlite
+
+# Redis
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# Mail
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=
+MAIL_PASSWORD=
+'''
+        with open(self.project_root / ".env.example", "w") as f:
+            f.write(content)
+        print("✅ Created .env.example")
+    
+    def _create_requirements_txt(self):
+        """requirements.txtを作成"""
+        content = '''fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+jinja2>=3.1.0
+python-dotenv>=1.0.0
+sqlalchemy>=2.0.0
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+httpx>=0.25.0
+pydantic>=2.0.0
+'''
+        with open(self.project_root / "requirements.txt", "w") as f:
+            f.write(content)
+        print("✅ Created requirements.txt")
+
+class ArtisanCommandTester:
+    """Artisanコマンドのテストクラス"""
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+        self.artisan_path = project_root / "artisan"
+    
+    def test_artisan_commands(self) -> Dict[str, Any]:
+        """Artisanコマンドをテスト"""
+        results = {
+            "help": False,
+            "make_controller": False,
+            "make_model": False,
+            "make_service": False,
+            "route_list": False,
+            "errors": []
+        }
+        
+        try:
+            # ヘルプコマンドテスト
+            result = subprocess.run([str(self.artisan_path), "--help"], 
+                                  capture_output=True, text=True, cwd=self.project_root)
+            results["help"] = result.returncode == 0
+            
+            # コントローラー作成テスト
+            result = subprocess.run([str(self.artisan_path), "make:controller", "TestController"], 
+                                  capture_output=True, text=True, cwd=self.project_root)
+            results["make_controller"] = result.returncode == 0
+            
+            # モデル作成テスト
+            result = subprocess.run([str(self.artisan_path), "make:model", "TestModel"], 
+                                  capture_output=True, text=True, cwd=self.project_root)
+            results["make_model"] = result.returncode == 0
+            
+            # サービス作成テスト
+            result = subprocess.run([str(self.artisan_path), "make:service", "TestService"], 
+                                  capture_output=True, text=True, cwd=self.project_root)
+            results["make_service"] = result.returncode == 0
+            
+            # ルートリストテスト
+            result = subprocess.run([str(self.artisan_path), "route:list"], 
+                                  capture_output=True, text=True, cwd=self.project_root)
+            results["route_list"] = result.returncode == 0
+            
+        except Exception as e:
+            results["errors"].append(str(e))
+        
+        return results
+
+class ApplicationTester:
+    """アプリケーション動作テストクラス"""
+    
+    def __init__(self, project_root: Path):
+        self.project_root = project_root
+    
+    def test_imports(self) -> Dict[str, Any]:
+        """インポート可能性をテスト"""
+        results = {
+            "bootstrap_app": False,
+            "config_app": False,
+            "main_app": False,
+            "errors": []
+        }
+        
+        try:
+            # bootstrap.app のテスト
+            sys.path.insert(0, str(self.project_root))
+            
+            spec = importlib.util.spec_from_file_location(
+                "bootstrap.bootstrap_app", 
+                self.project_root / "bootstrap" / "bootstrap_app.py"
+            )
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                results["bootstrap_app"] = hasattr(module, 'create_app')
+                
+        except Exception as e:
+            results["errors"].append(f"bootstrap import error: {e}")
+        
+        try:
+            # config.app のテスト
+            spec = importlib.util.spec_from_file_location(
+                "config.app", 
+                self.project_root / "config" / "app.py"
+            )
+            if spec and spec.loader:
+                module = importlib.util.module_from_spec(spec)
+                spec.loader.exec_module(module)
+                results["config_app"] = hasattr(module, 'get_config')
+                
+        except Exception as e:
+            results["errors"].append(f"config import error: {e}")
+        
+        return results
+
+def main():
+    """メイン実行関数"""
+    project_root = Path(__file__).parent
+    
+    print("🧪 Laravel風プロジェクト自動テスト開始")
+    print("=" * 50)
+    
+    # 1. 構造検証
+    print("\n📁 プロジェクト構造検証...")
+    validator = LaravelStructureValidator(project_root)
+    structure_results = validator.validate_structure()
+    
+    print(f"✅ 存在するディレクトリ: {len(structure_results['existing_dirs'])}")
+    print(f"❌ 不足ディレクトリ: {len(structure_results['missing_dirs'])}")
+    print(f"✅ 存在するファイル: {len(structure_results['existing_files'])}")
+    print(f"❌ 不足ファイル: {len(structure_results['missing_files'])}")
+    
+    # 自動修正
+    if structure_results['missing_dirs'] or structure_results['missing_files']:
+        print("\n🔧 構造を自動修正中...")
+        validator.fix_structure(structure_results)
+    
+    # 2. Artisanコマンドテスト
+    print("\n🎨 Artisanコマンドテスト...")
+    artisan_tester = ArtisanCommandTester(project_root)
+    artisan_results = artisan_tester.test_artisan_commands()
+    
+    for command, success in artisan_results.items():
+        if command != "errors":
+            status = "✅" if success else "❌"
+            print(f"{status} {command}: {'OK' if success else 'FAILED'}")
+    
+    # 3. アプリケーションテスト
+    print("\n🚀 アプリケーション動作テスト...")
+    app_tester = ApplicationTester(project_root)
+    app_results = app_tester.test_imports()
+    
+    for component, success in app_results.items():
+        if component != "errors":
+            status = "✅" if success else "❌"
+            print(f"{status} {component}: {'OK' if success else 'FAILED'}")
+    
+    # 4. レポート生成
+    print("\n📊 テスト結果サマリー")
+    print("=" * 50)
+    
+    total_tests = len(artisan_results) - 1 + len(app_results) - 1  # errorsを除く
+    passed_tests = sum(1 for k, v in artisan_results.items() if k != "errors" and v) + \
+                   sum(1 for k, v in app_results.items() if k != "errors" and v)
+    
+    print(f"テスト実行数: {total_tests}")
+    print(f"成功: {passed_tests}")
+    print(f"失敗: {total_tests - passed_tests}")
+    print(f"成功率: {(passed_tests/total_tests)*100:.1f}%")
+    
+    # エラー詳細
+    all_errors = artisan_results.get("errors", []) + app_results.get("errors", [])
+    if all_errors:
+        print("\n❌ エラー詳細:")
+        for error in all_errors:
+            print(f"  - {error}")
+    
+    # 5. テスト結果をJSONで保存
+    test_report = {
+        "timestamp": datetime.now().isoformat(),
+        "structure": structure_results,
+        "artisan": artisan_results,
+        "application": app_results,
+        "summary": {
+            "total_tests": total_tests,
+            "passed": passed_tests,
+            "failed": total_tests - passed_tests,
+            "success_rate": (passed_tests/total_tests)*100
+        }
+    }
+    
+    report_path = project_root / "storage" / "logs" / "test_report.json"
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(test_report, f, indent=2, ensure_ascii=False)
+    
+    print(f"\n📄 詳細レポート保存: {report_path}")
+    print("🎯 テスト完了!")
+
+if __name__ == "__main__":
+    main()

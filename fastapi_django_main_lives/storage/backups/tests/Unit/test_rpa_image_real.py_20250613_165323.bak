@@ -1,0 +1,168 @@
+#!/usr/bin/env python3
+"""
+RPA画像取得機能 - 実際のサイトテスト
+===================================
+
+GitHub Pagesや実際の画像を含むサイトで
+RPA画像取得機能をテストします。
+"""
+
+import asyncio
+import sys
+import os
+from pathlib import Path
+
+# パスを追加
+sys.path.append('/workspaces/fastapi_django_main_live')
+
+from contbk.gra_12_rpa.rpa_automation import RPAManager
+
+async def test_github_image_collection():
+    """GitHub リポジトリページから画像を取得"""
+    print("🔥 Issue #5対応: GitHub実サイトでの画像取得テスト")
+    print("=" * 60)
+    
+    rpa = RPAManager()
+    
+    # テスト対象URL（GitHub Pages - よく画像が含まれるサイト）
+    test_urls = [
+        "https://github.com/miyataken999/fastapi_django_main_live",  # 自分のリポジトリ
+        "https://github.com/microsoft/vscode",  # VSCodeリポジトリ（よく画像がある）
+        "https://docs.github.com/ja",  # GitHub Docs（多くの画像）
+    ]
+    
+    all_downloaded = []
+    
+    for i, url in enumerate(test_urls, 1):
+        print(f"\n🎯 テスト {i}/3: {url}")
+        print("-" * 50)
+        
+        try:
+            # 画像取得実行
+            downloaded_files, message = await rpa.collect_images_from_page(
+                url=url,
+                image_selector="img",
+                download_path=f"/workspaces/fastapi_django_main_live/docs/images/collected/test_{i}",
+                limit=5  # テストなので5枚まで
+            )
+            
+            print(f"📊 結果: {message}")
+            print(f"📁 取得ファイル数: {len(downloaded_files)}")
+            
+            if downloaded_files:
+                print("📸 取得した画像:")
+                for file_path in downloaded_files:
+                    file_size = os.path.getsize(file_path) if os.path.exists(file_path) else 0
+                    print(f"  ✅ {os.path.basename(file_path)} ({file_size:,} bytes)")
+                
+                all_downloaded.extend(downloaded_files)
+            else:
+                print("  ⚠️ 画像が見つかりませんでした")
+                
+        except Exception as e:
+            print(f"❌ エラー: {e}")
+    
+    # 総合結果
+    print(f"\n📊 テスト完了サマリー:")
+    print(f"  - テスト対象サイト数: {len(test_urls)}")
+    print(f"  - 総取得画像数: {len(all_downloaded)}")
+    print(f"  - 取得成功率: {len([f for f in all_downloaded if os.path.exists(f)])/max(len(all_downloaded), 1)*100:.1f}%")
+    
+    # ギャラリー作成
+    if all_downloaded:
+        print(f"\n🖼️ 画像ギャラリー作成中...")
+        gallery_path = await rpa.create_image_gallery(
+            image_paths=all_downloaded,
+            output_path="/workspaces/fastapi_django_main_live/docs/rpa_image_gallery.html"
+        )
+        print(f"✅ ギャラリー作成完了: {gallery_path}")
+        
+        # README用のマークダウンも作成
+        create_demo_markdown(all_downloaded)
+        
+        return True, f"✅ {len(all_downloaded)}個の画像を取得し、ギャラリーを作成しました"
+    else:
+        return False, "❌ 画像取得に失敗しました"
+
+def create_demo_markdown(image_paths):
+    """デモンストレーション用マークダウン作成"""
+    
+    demo_content = f"""# 🖼️ RPA画像取得デモンストレーション
+
+## 📸 機能概要
+Issue #5「RPAで画像取得ができなら」に対応した画像取得機能のデモンストレーションです。
+
+## ✅ 実装完了機能
+- 🎯 **自動画像発見**: ウェブページから画像要素を自動検出
+- 📥 **バッチダウンロード**: 複数画像の一括取得
+- 🗂️ **整理保存**: 取得日時・サイト別の自動分類
+- 🖼️ **ギャラリー生成**: HTMLギャラリーの自動作成
+- 📊 **実行履歴**: データベースでの取得記録管理
+
+## 📊 テスト結果
+- **取得画像数**: {len(image_paths)}枚
+- **テスト実行日時**: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+- **ステータス**: ✅ 成功
+
+## 🖼️ 取得画像一覧
+"""
+    
+    for i, path in enumerate(image_paths, 1):
+        if os.path.exists(path):
+            file_size = os.path.getsize(path)
+            filename = os.path.basename(path)
+            demo_content += f"\n{i}. **{filename}** ({file_size:,} bytes)"
+    
+    demo_content += f"""
+
+## 🚀 使用方法
+```python
+from contbk.gra_12_rpa.rpa_automation import RPAManager
+
+# RPA管理システム初期化
+rpa = RPAManager()
+
+# 画像取得実行
+downloaded_files, message = await rpa.collect_images_from_page(
+    url="https://example.com",
+    image_selector="img",
+    download_path="./images",
+    limit=10
+)
+
+# ギャラリー作成
+gallery_path = await rpa.create_image_gallery(downloaded_files)
+```
+
+## 🎯 Issue #5 対応状況
+- ✅ **機能実装**: 完了
+- ✅ **テスト実行**: 完了  
+- ✅ **ドキュメント**: 完了
+- 🔄 **Issue クローズ**: 準備完了
+
+---
+*Generated by RPA Image Collection System - {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}*
+"""
+    
+    # ファイル保存
+    demo_path = "/workspaces/fastapi_django_main_live/docs/rpa_image_collection_demo.md"
+    with open(demo_path, 'w', encoding='utf-8') as f:
+        f.write(demo_content)
+    
+    print(f"📝 デモンストレーション資料作成完了: {demo_path}")
+
+if __name__ == "__main__":
+    import datetime
+    
+    # テスト実行
+    success, message = asyncio.run(test_github_image_collection())
+    
+    print(f"\n🏁 最終結果:")
+    print(f"  - 機能動作: {'✅ 成功' if success else '❌ 失敗'}")
+    print(f"  - メッセージ: {message}")
+    
+    if success:
+        print(f"\n🎉 Issue #5「RPAで画像取得ができなら」解決準備完了！")
+        print(f"   GitHub Issueをクローズできます。")
+    else:
+        print(f"\n⚠️ 一部機能に問題があります。要調整。")

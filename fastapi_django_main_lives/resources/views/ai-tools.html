@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- PWA設定 -->
+    <link rel="manifest" href="/static/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="AI Tools">
+    
+    <!-- アイコン -->
+    <link rel="apple-touch-icon" href="/static/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/icon-32x32.png">
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .tool-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .tool-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.1);
+        }
+        .tool-card h3 {
+            color: #333;
+            margin: 0 0 15px 0;
+            font-size: 1.3em;
+        }
+        .tool-card p {
+            color: #666;
+            margin: 0 0 20px 0;
+        }
+        .tool-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .tool-btn:hover {
+            background: #5a67d8;
+        }
+        .gradio-embed {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .url-display {
+            background: #e2e8f0;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9em;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            .header h1 {
+                font-size: 2em;
+            }
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 {{ title }}</h1>
+            <p>AI-Human協働開発システム - PWA対応</p>
+            <div class="url-display">
+                📍 現在のURL: <strong>{{ request.url }}</strong>
+            </div>
+        </div>
+
+        <div class="tools-grid">
+            <div class="tool-card" onclick="window.location.href='/ai-tools/chat'">
+                <h3>💬 AI Chat</h3>
+                <p>AIとの対話インターフェース</p>
+                <div class="url-display">URL: /ai-tools/chat</div>
+                <a href="/ai-tools/chat" class="tool-btn">開く</a>
+            </div>
+
+            <div class="tool-card" onclick="window.location.href='/ai-tools/code-generator'">
+                <h3>🤖 Code Generator</h3>
+                <p>AIによるコード生成</p>
+                <div class="url-display">URL: /ai-tools/code-generator</div>
+                <a href="/ai-tools/code-generator" class="tool-btn">開く</a>
+            </div>
+
+            <div class="tool-card" onclick="window.location.href='/ai-tools/screenshot'">
+                <h3>📸 Screenshot Tool</h3>
+                <p>画面キャプチャ・スクリーンショット</p>
+                <div class="url-display">URL: /ai-tools/screenshot</div>
+                <a href="/ai-tools/screenshot" class="tool-btn">開く</a>
+            </div>
+
+            <div class="tool-card" onclick="window.location.href='/ai-tools/admin'">
+                <h3>⚙️ Admin Panel</h3>
+                <p>システム管理・設定</p>
+                <div class="url-display">URL: /ai-tools/admin</div>
+                <a href="/ai-tools/admin" class="tool-btn">開く</a>
+            </div>
+
+            <div class="tool-card" onclick="window.location.href='/gradio'">
+                <h3>🌐 Gradio Direct</h3>
+                <p>Gradio統合インターフェース</p>
+                <div class="url-display">URL: /gradio</div>
+                <a href="/gradio" class="tool-btn">開く</a>
+            </div>
+        </div>
+
+        <!-- Gradio埋め込み（オプション） -->
+        {% if gradio_url %}
+        <div style="margin-top: 40px;">
+            <h2>🔧 インターフェースプレビュー</h2>
+            <iframe src="{{ gradio_url }}" class="gradio-embed"></iframe>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // PWA サービスワーカー登録
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/static/sw.js')
+                .then(function(registration) {
+                    console.log('ServiceWorker registered: ', registration);
+                })
+                .catch(function(error) {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        }
+
+        // PWA インストールプロンプト
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // インストールボタンを表示
+            const installBtn = document.createElement('button');
+            installBtn.textContent = '📱 アプリとしてインストール';
+            installBtn.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                background: #667eea;
+                color: white;
+                border: none;
+                padding: 15px 20px;
+                border-radius: 25px;
+                cursor: pointer;
+                font-size: 1em;
+                box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+                z-index: 1000;
+            `;
+            
+            installBtn.addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA installed');
+                    }
+                    deferredPrompt = null;
+                    installBtn.remove();
+                });
+            });
+            
+            document.body.appendChild(installBtn);
+        });
+
+        // URL情報の表示
+        console.log('現在のURL:', window.location.href);
+        console.log('PWA対応:', {{ pwa_enabled|lower }});
+    </script>
+</body>
+</html>

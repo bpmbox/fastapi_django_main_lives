@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    
+    <!-- React & 関連ライブラリ -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- CSS Framework -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body>
+    <div id="react-root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // ログインコンポーネント
+        const LoginForm = () => {
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleLogin = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                try {
+                    const response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        // ログイン成功
+                        localStorage.setItem('auth_token', result.token);
+                        window.location.href = '/dashboard';
+                    } else {
+                        setError('ログインに失敗しました');
+                    }
+                } catch (err) {
+                    setError('接続エラーが発生しました');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            return (
+                <div className="min-h-screen gradient-bg flex items-center justify-center">
+                    <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md">
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl font-bold text-gray-800">🚀 AI Tools</h1>
+                            <p className="text-gray-600 mt-2">ログインしてAIツールにアクセス</p>
+                        </div>
+
+                        <form onSubmit={handleLogin}>
+                            <div className="mb-6">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    <i className="fas fa-user mr-2"></i>ユーザー名
+                                </label>
+                                <input
+                                    type="text"
+                                    value={username}
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                    placeholder="ユーザー名を入力"
+                                    required
+                                />
+                            </div>
+
+                            <div className="mb-6">
+                                <label className="block text-gray-700 text-sm font-bold mb-2">
+                                    <i className="fas fa-lock mr-2"></i>パスワード
+                                </label>
+                                <input
+                                    type="password"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+                                    placeholder="パスワードを入力"
+                                    required
+                                />
+                            </div>
+
+                            {error && (
+                                <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                                    <i className="fas fa-exclamation-triangle mr-2"></i>
+                                    {error}
+                                </div>
+                            )}
+
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-600 hover:to-purple-700 transition duration-300 disabled:opacity-50"
+                            >
+                                {loading ? (
+                                    <><i className="fas fa-spinner fa-spin mr-2"></i>ログイン中...</>
+                                ) : (
+                                    <><i className="fas fa-sign-in-alt mr-2"></i>ログイン</>
+                                )}
+                            </button>
+                        </form>
+
+                        <div className="mt-6 text-center">
+                            <p className="text-gray-600 text-sm">
+                                デモ用: 任意のユーザー名/パスワードでログイン可能
+                            </p>
+                        </div>
+
+                        <div className="mt-8 border-t pt-6">
+                            <h3 className="text-lg font-bold text-gray-800 mb-3">🛠️ 利用可能ツール</h3>
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                                <div className="bg-blue-50 p-3 rounded-lg">
+                                    <i className="fas fa-comments text-blue-500 mr-2"></i>
+                                    <strong>AI Chat</strong><br>
+                                    <span className="text-gray-600">/tools/chat</span>
+                                </div>
+                                <div className="bg-green-50 p-3 rounded-lg">
+                                    <i className="fas fa-code text-green-500 mr-2"></i>
+                                    <strong>Code Gen</strong><br>
+                                    <span className="text-gray-600">/tools/code-generator</span>
+                                </div>
+                                <div className="bg-purple-50 p-3 rounded-lg">
+                                    <i className="fas fa-camera text-purple-500 mr-2"></i>
+                                    <strong>Screenshot</strong><br>
+                                    <span className="text-gray-600">/tools/screenshot</span>
+                                </div>
+                                <div className="bg-red-50 p-3 rounded-lg">
+                                    <i className="fas fa-cog text-red-500 mr-2"></i>
+                                    <strong>Admin</strong><br>
+                                    <span className="text-gray-600">/tools/admin</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="mt-6 text-center">
+                            <a 
+                                href="/dashboard"
+                                className="text-blue-500 hover:text-blue-700 text-sm"
+                            >
+                                <i className="fas fa-arrow-right mr-1"></i>
+                                ダッシュボードに直接アクセス
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Reactアプリをレンダリング
+        ReactDOM.render(<LoginForm />, document.getElementById('react-root'));
+    </script>
+</body>
+</html>

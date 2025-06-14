@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block nav_home %}primary{% endblock %}
+
+{% block content %}
+<div class="welcome" style="display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; min-height: 400px;">
+    <h1 style="font-size: 3.5rem; margin-bottom: 1rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Welcome!</h1>
+    <p style="font-size: 1.2rem; margin-bottom: 2rem; opacity: 0.9; line-height: 1.6; max-width: 600px;">
+        AI Tools統合ダッシュボードへようこそ！<br>
+        左のサイドバーから様々なツールにアクセスできます。
+    </p>
+    
+    <div class="stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 2rem; width: 100%; max-width: 600px;">
+        <div class="stat-item" style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+            <div class="stat-number" style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">{{ tools|length }}</div>
+            <div class="stat-label" style="font-size: 0.9rem; opacity: 0.8;">利用可能ツール</div>
+        </div>
+        <div class="stat-item" style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+            <div class="stat-number" style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">FastAPI</div>
+            <div class="stat-label" style="font-size: 0.9rem; opacity: 0.8;">バックエンド</div>
+        </div>
+        <div class="stat-item" style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+            <div class="stat-number" style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">Jinja2</div>
+            <div class="stat-label" style="font-size: 0.9rem; opacity: 0.8;">テンプレート</div>
+        </div>
+        <div class="stat-item" style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 12px; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2);">
+            <div class="stat-number" style="font-size: 2rem; font-weight: bold; margin-bottom: 0.5rem;">Django</div>
+            <div class="stat-label" style="font-size: 0.9rem; opacity: 0.8;">統合フレームワーク</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

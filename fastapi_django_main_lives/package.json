@@ -1,0 +1,23 @@
+{
+  "name": "fastapi_django_main_live",
+  "version": "1.0.0",
+  "description": "--- title: FastAPI Django Main Live emoji: 🚀 colorFrom: blue colorTo: purple sdk: docker pinned: false license: mit app_port: 8004 ---",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.27.4",
+    "@babel/generator": "^7.27.5",
+    "@babel/parser": "^7.27.5",
+    "@babel/traverse": "^7.27.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}

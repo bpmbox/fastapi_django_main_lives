@@ -1,0 +1,133 @@
+"""
+簡単スクリーンショット取得ツール
+===============================
+
+PlaywrightでWebページのスクリーンショットを取得
+"""
+
+import asyncio
+import os
+from pathlib import Path
+
+async def capture_website_screenshots():
+    """Webサイトのスクリーンショットを取得"""
+    
+    # ディレクトリ作成
+    screenshots_dir = Path("/workspaces/fastapi_django_main_live/docs/images/screenshots")
+    screenshots_dir.mkdir(parents=True, exist_ok=True)
+    
+    try:
+        from playwright.async_api import async_playwright
+        
+        async with async_playwright() as p:
+            # ブラウザ起動
+            browser = await p.chromium.launch(headless=True)
+            context = await browser.new_context(
+                viewport={'width': 1920, 'height': 1080}
+            )
+            page = await context.new_page()
+            
+            # 取得対象
+            targets = [
+                {
+                    "url": "https://ideal-halibut-4q5qp79g2jp9-7860.app.github.dev/",
+                    "filename": "main_dashboard.png",
+                    "name": "メインダッシュボード"
+                },
+                {
+                    "url": "http://localhost:7865",
+                    "filename": "contbk_dashboard.png", 
+                    "name": "ContBK統合ダッシュボード"
+                }
+            ]
+            
+            results = []
+            
+            for target in targets:
+                try:
+                    print(f"📸 {target['name']} のスクリーンショット取得中...")
+                    
+                    # ページにアクセス
+                    await page.goto(target["url"], wait_until="networkidle")
+                    
+                    # 少し待機
+                    await asyncio.sleep(3)
+                    
+                    # スクリーンショット取得
+                    screenshot_path = screenshots_dir / target["filename"]
+                    await page.screenshot(path=str(screenshot_path), full_page=True)
+                    
+                    if screenshot_path.exists():
+                        print(f"✅ {target['name']}: {screenshot_path}")
+                        results.append({
+                            "success": True,
+                            "target": target,
+                            "path": screenshot_path
+                        })
+                    else:
+                        print(f"❌ {target['name']}: ファイル作成失敗")
+                        results.append({
+                            "success": False,
+                            "target": target,
+                            "error": "ファイル作成失敗"
+                        })
+                        
+                except Exception as e:
+                    print(f"❌ {target['name']}: {e}")
+                    results.append({
+                        "success": False,
+                        "target": target,
+                        "error": str(e)
+                    })
+            
+            await browser.close()
+            return results
+            
+    except ImportError:
+        print("❌ Playwright not installed. Install with: pip install playwright && playwright install")
+        return []
+    except Exception as e:
+        print(f"❌ エラー: {e}")
+        return []
+
+async def main():
+    """メイン実行関数"""
+    print("🚀 スクリーンショット取得開始...")
+    
+    results = await capture_website_screenshots()
+    
+    # 結果集計
+    successful = [r for r in results if r.get("success", False)]
+    
+    print(f"\n📊 結果: {len(successful)}/{len(results)} 成功")
+    
+    if successful:
+        print("\n✅ 取得成功:")
+        for result in successful:
+            print(f"  - {result['target']['name']}: {result['path']}")
+    
+    if results and any(r.get("success") for r in results):
+        print("\n🔄 Gitにコミット中...")
+        
+        # Git操作
+        import subprocess
+        
+        try:
+            # Git add
+            subprocess.run(['git', 'add', 'docs/images/screenshots/'], 
+                         cwd='/workspaces/fastapi_django_main_live', check=True)
+            
+            # Git commit
+            subprocess.run(['git', 'commit', '-m', 
+                          '📸 システムスクリーンショット追加\n\n- メインダッシュボードキャプチャ\n- ContBK統合ダッシュボードキャプチャ\n- ドキュメント用画面資料完備'], 
+                         cwd='/workspaces/fastapi_django_main_live', check=True)
+            
+            print("✅ Gitコミット完了")
+            
+        except subprocess.CalledProcessError as e:
+            print(f"⚠️ Git操作エラー: {e}")
+    
+    print("\n🎉 スクリーンショット取得完了!")
+
+if __name__ == "__main__":
+    asyncio.run(main())

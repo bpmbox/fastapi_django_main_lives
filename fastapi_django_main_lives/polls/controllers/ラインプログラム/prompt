@@ -1,0 +1,8 @@
+googleappsscript
+fileはJSで作成
+lineからデータの取得
+imageデータをBlogで取得してドライブに保存
+npm install scriptの作成
+ipynbでテストの作成
+Readme.mdで仕様書の作成
+plantUMLで仕様書の作成
