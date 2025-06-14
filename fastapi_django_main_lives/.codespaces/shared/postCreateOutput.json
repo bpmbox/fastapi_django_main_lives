@@ -1,0 +1,28 @@
+{
+  "steps": [
+    {
+      "name": "Finishing up...",
+      "status": "succeeded",
+      "description": null,
+      "stepDetail": null
+    },
+    {
+      "name": "Detected Python 3.12.1\n , /opt/python/3.12.1/bin/python3.12 -m pip install --cache-dir /usr/local/share/pip-cache --prefer-binary -r requirements.txt --target=/home/codespace/.local/lib/python3.12/site-packages --upgrade | ts [%T%z]",
+      "status": "failed",
+      "description": null,
+      "stepDetail": null
+    },
+    {
+      "name": "Running postCreateCommand...",
+      "status": "succeeded",
+      "description": null,
+      "stepDetail": "/usr/local/share/pull-git-lfs-artifacts.sh"
+    },
+    {
+      "name": "Done",
+      "status": "succeeded",
+      "description": null,
+      "stepDetail": null
+    }
+  ]
+}
